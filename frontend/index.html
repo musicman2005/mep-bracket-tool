@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MEP Bracket Tool</title>
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <style>
     :root{
       --bg:#0b0f14; --panel:#0f172a; --panel2:#0b1220; --border:#1f2a44;
@@ -15,13 +18,12 @@
     header{
       height:58px; padding:0 16px; background:#111827; border-bottom:1px solid var(--border);
       display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:10;
     }
-    header .brand{ font-weight:800; letter-spacing:.2px; }
-    header .right{ display:flex; gap:10px; align-items:center; }
+    header .brand{ font-weight:900; letter-spacing:.2px; }
+    header .right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
     .pill{ border:1px solid var(--border); background:rgba(255,255,255,.03); padding:6px 10px; border-radius:999px; color:var(--muted); font-size:12px; }
-
-    main{ max-width:1400px; margin:0 auto; padding:16px; }
-
+    main{ max-width:1500px; margin:0 auto; padding:16px; }
     .card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; }
     input,select,textarea{
       width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:var(--panel2); color:var(--text);
@@ -31,58 +33,50 @@
     }
     button.primary{ background:var(--blue); border-color:var(--blue); }
     button.ghost{ background:transparent; }
+    button.small{ padding:8px 10px; font-size:12px; border-radius:10px; }
     button:disabled{ opacity:.5; cursor:not-allowed; }
-
     .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .row{ display:flex; gap:10px; align-items:center; }
     .muted{ color:var(--muted); font-size:12px; }
     .hr{ height:1px; background:var(--border); margin:12px 0; }
 
-    /* Workspace layout */
     .workspace{
       display:grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: 420px 1fr;
       gap:14px;
       align-items:start;
+      margin-top:14px;
     }
-    .tabs{
-      display:flex; gap:6px; flex-wrap:wrap;
-      border-bottom:1px solid var(--border);
-      padding-bottom:10px; margin-bottom:10px;
-    }
+
+    .tabs{ display:flex; gap:6px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px; }
     .tab{
       padding:8px 10px; border-radius:10px; border:1px solid var(--border);
       background:rgba(255,255,255,.03); color:var(--muted); font-size:12px; cursor:pointer;
+      user-select:none;
     }
     .tab.active{ background:rgba(37,99,235,.18); border-color:rgba(37,99,235,.6); color:var(--text); }
 
-    /* Right panel “drawing” area */
     .stage{
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:14px;
-      min-height:640px;
+      min-height:680px;
       position:relative;
       overflow:hidden;
     }
-    .stageTop{
-      display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;
-    }
-    .kpis{
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
+    .stageTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .kpis{ display:flex; gap:10px; flex-wrap:wrap; }
     .kpi{
       background:rgba(0,0,0,.18); border:1px solid var(--border);
-      padding:8px 10px; border-radius:12px; min-width:140px;
+      padding:8px 10px; border-radius:12px; min-width:160px;
     }
     .kpi .lbl{ font-size:11px; color:var(--muted); }
-    .kpi .val{ font-size:16px; font-weight:800; margin-top:2px; }
-    .badge{ font-weight:800; }
+    .kpi .val{ font-size:16px; font-weight:900; margin-top:2px; }
+    .badge{ font-weight:900; }
     .badge.pass{ color:var(--green); }
     .badge.fail{ color:var(--red); }
 
-    /* Simple SVG holder */
     .svgWrap{
       border:1px dashed rgba(255,255,255,.15);
       border-radius:12px;
@@ -90,24 +84,12 @@
       background:rgba(0,0,0,.12);
     }
 
-    /* Modal like NGB “results window” */
-    .modalBack{
-      position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:20px;
-    }
-    .modal{
-      width:min(860px, 100%);
-      background:#0b1220;
-      border:1px solid var(--border);
-      border-radius:16px;
-      box-shadow:0 20px 70px rgba(0,0,0,.5);
-      overflow:hidden;
-    }
-    .modalHeader{
-      padding:12px 14px;
-      background:#0f172a;
-      border-bottom:1px solid var(--border);
-      display:flex; justify-content:space-between; align-items:center;
-    }
+    .noteLine{ padding:6px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .noteLine:last-child{ border-bottom:none; }
+
+    .modalBack{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal{ width:min(980px, 100%); background:#0b1220; border:1px solid var(--border); border-radius:16px; box-shadow:0 20px 70px rgba(0,0,0,.5); overflow:hidden; }
+    .modalHeader{ padding:12px 14px; background:#0f172a; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .modalBody{ padding:14px; max-height:70vh; overflow:auto; }
     pre{ margin:0; white-space:pre-wrap; background:rgba(0,0,0,.18); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.08); }
 
@@ -115,6 +97,22 @@
       padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
       background:rgba(37,99,235,.10); color:var(--text); font-size:12px;
     }
+
+    .loadRow{
+      display:grid;
+      grid-template-columns: 1fr 90px;
+      gap:8px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .miniGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+
+    .danger{ color: #fecaca; }
   </style>
 </head>
 
@@ -123,23 +121,27 @@
   <div class="row" style="gap:12px">
     <div class="brand">MEP Bracket Tool</div>
     <div class="pill" id="apiBasePill"></div>
+    <div class="pill" id="authPill">Not logged in</div>
   </div>
+
   <div class="right">
-    <select id="projectSelect" onchange="onSelectProject()">
+    <select id="projectSelect" style="min-width:260px" onchange="onSelectProject()">
       <option value="">Select project…</option>
     </select>
-    <button class="ghost" onclick="refreshProjects()">Refresh</button>
-    <button onclick="logout()">Logout</button>
+    <button class="small" onclick="openProjectModal()">New Project</button>
+    <button class="small" onclick="refreshProjects()">Refresh</button>
+    <button class="small" onclick="openResults()">Results</button>
+    <button class="small" onclick="downloadPdf()">Print PDF</button>
+    <button class="small" onclick="logout()">Logout</button>
   </div>
 </header>
 
 <main>
-  <!-- Setup / Auth -->
   <div class="grid2">
     <div class="card">
-      <div style="font-weight:800; margin-bottom:8px">Connect</div>
+      <div style="font-weight:900; margin-bottom:8px">Connect</div>
       <label class="muted">API Base URL</label>
-      <input id="api" placeholder="http://localhost:8000" />
+      <input id="api" placeholder="http://192.168.10.181:8000" />
       <div class="row" style="margin-top:10px">
         <button onclick="saveApi()">Save API</button>
         <span class="muted" id="apiMsg"></span>
@@ -147,7 +149,7 @@
 
       <div class="hr"></div>
 
-      <div style="font-weight:800; margin-bottom:8px">Register / Login</div>
+      <div style="font-weight:900; margin-bottom:8px">Login</div>
       <div class="grid2">
         <div>
           <label class="muted">Email</label>
@@ -166,8 +168,8 @@
 
       <div class="hr"></div>
 
-      <div style="font-weight:800; margin-bottom:8px">Library import (CSV)</div>
-      <div class="muted">Pick a template type, choose file, upload.</div>
+      <div style="font-weight:900; margin-bottom:8px">Library import (CSV)</div>
+      <div class="muted">Upload templates to populate the DB. (You already proved this works.)</div>
       <div class="row" style="margin-top:10px">
         <select id="csvType">
           <option value="profiles">profiles</option>
@@ -184,51 +186,42 @@
     </div>
 
     <div class="card">
-      <div style="font-weight:800; margin-bottom:8px">Create project</div>
-      <div class="grid2">
-        <div>
-          <label class="muted">Project name</label>
-          <input id="projName" placeholder="Example Project" />
-        </div>
-        <div>
-          <label class="muted">Project ref</label>
-          <input id="projRef" placeholder="TT-001" />
-        </div>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button class="primary" onclick="createProject()">Create</button>
-        <span id="projMsg" class="muted"></span>
-      </div>
-
-      <div class="hr"></div>
-
+      <div style="font-weight:900; margin-bottom:8px">How this behaves (NGB-style)</div>
       <div class="hint">
-        Once you select a project (top-right), you’ll get the NGB-style bracket workspace:
-        tabs on the left, drawing + totals on the right, and a results popup.
+        <div><b>Left:</b> define bracket options + tier loads.</div>
+        <div><b>Right:</b> live drawing + live check results.</div>
+        <div style="margin-top:6px">The check call is <b>debounced</b> while you type (like a desktop tool feel).</div>
       </div>
+      <div class="hr"></div>
+      <div class="muted">
+        Current backend endpoints in use:
+        <div>• GET /projects</div>
+        <div>• POST /projects</div>
+        <div>• POST /projects/{id}/check</div>
+        <div>• GET /projects/{id}/pdf</div>
+      </div>
+      <div class="hr"></div>
+      <div class="muted danger" id="wsWarn"></div>
     </div>
   </div>
 
-  <div style="height:14px"></div>
-
-  <!-- NGB-style Workspace -->
   <div class="workspace">
-    <!-- Left control panel -->
+    <!-- Left -->
     <div class="card">
       <div class="tabs" id="tabs"></div>
-
       <div id="tabContent"></div>
 
       <div class="hr"></div>
 
       <div class="row">
-        <button class="primary" onclick="runCheck()">Run check</button>
-        <button onclick="downloadPdf()">Print to PDF</button>
+        <button class="primary" onclick="runCheckNow()">Run check</button>
+        <button onclick="openResults()">View results</button>
+        <button onclick="downloadPdf()">Print PDF</button>
       </div>
       <div class="muted" id="wsMsg" style="margin-top:8px"></div>
     </div>
 
-    <!-- Right drawing / results -->
+    <!-- Right -->
     <div class="stage">
       <div class="stageTop">
         <div>
@@ -253,33 +246,7 @@
       </div>
 
       <div class="svgWrap">
-        <!-- Placeholder drawing (we’ll improve to match NGB over time) -->
-        <svg id="bracketSvg" width="100%" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <style>
-              .line{ stroke:rgba(255,255,255,.65); stroke-width:4; }
-              .thin{ stroke:rgba(255,255,255,.35); stroke-width:2; }
-              .txt{ fill:rgba(255,255,255,.85); font: 18px system-ui; font-weight:700; }
-              .mut{ fill:rgba(255,255,255,.55); font: 14px system-ui; }
-            </style>
-          </defs>
-
-          <text x="20" y="34" class="txt">Bracket Drawing (placeholder)</text>
-          <text x="20" y="58" class="mut">We’ll swap this for an NGB-like drawing with tiers/services next.</text>
-
-          <!-- rods -->
-          <line x1="240" y1="110" x2="240" y2="460" class="thin"/>
-          <line x1="660" y1="110" x2="660" y2="460" class="thin"/>
-
-          <!-- strut -->
-          <line x1="180" y1="200" x2="720" y2="200" class="line"/>
-          <line x1="180" y1="320" x2="720" y2="320" class="line"/>
-          <line x1="180" y1="440" x2="720" y2="440" class="line"/>
-
-          <text x="740" y="206" class="mut">Tier 3</text>
-          <text x="740" y="326" class="mut">Tier 2</text>
-          <text x="740" y="446" class="mut">Tier 1</text>
-        </svg>
+        <svg id="bracketSvg" width="100%" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
 
       <div class="hr"></div>
@@ -290,17 +257,20 @@
   </div>
 
   <div class="card" style="margin-top:14px">
-    <div style="font-weight:800; margin-bottom:8px">Debug</div>
+    <div style="font-weight:900; margin-bottom:8px">Debug</div>
     <pre id="debug"></pre>
   </div>
 </main>
 
 <!-- Results modal -->
-<div class="modalBack" id="modalBack" onclick="closeModal(event)">
+<div class="modalBack" id="modalBack" onclick="hideModal()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modalHeader">
-      <div style="font-weight:900">Deflection / Check Results</div>
-      <button onclick="hideModal()">Close</button>
+      <div style="font-weight:900">Calculation Results</div>
+      <div class="row">
+        <button class="small" onclick="downloadPdf()">Print PDF</button>
+        <button class="small" onclick="hideModal()">Close</button>
+      </div>
     </div>
     <div class="modalBody">
       <pre id="modalPre"></pre>
@@ -308,21 +278,94 @@
   </div>
 </div>
 
+<!-- New Project modal -->
+<div class="modalBack" id="projBack" onclick="closeProjectModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modalHeader">
+      <div style="font-weight:900">Create Project</div>
+      <button class="small" onclick="closeProjectModal()">Close</button>
+    </div>
+    <div class="modalBody">
+      <div class="grid2">
+        <div>
+          <label class="muted">Project name</label>
+          <input id="projName" placeholder="Test Trapeze" />
+        </div>
+        <div>
+          <label class="muted">Project ref</label>
+          <input id="projRef" placeholder="TT-001" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="primary" onclick="createProject()">Create</button>
+        <span class="muted" id="projMsg"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+  // ---- Storage keys
   const LS_API = "mep_api_base";
   const LS_TOKEN = "mep_token";
 
-  let currentProject = null;
-  let currentTab = "Define Bracket";
+  // ---- State (single source of truth)
+  const state = {
+    project: null,
+    tab: "Define Bracket",
+    bracket: {
+      bracket_ref: "BKT-001",
+      span_mm: 1200,
+      tier_count: 1,
+      fire_condition: false,
+      profile_id: "GEN_41x41",
+      rod_id: "GEN_M10",
+      washer_id: "GEN_PENNY_M10",
+      anchor_id: "GEN_STEEL_M10",
+    },
+    loads: {
+      1: [1500],
+      2: [],
+      3: []
+    },
+    lastResult: null,
+    debounceTimer: null,
+  };
 
-  const TABS = ["Instructions","Define Bracket","Add Containment","Add Ductwork","Add Pipework","Output Bracket"];
+  const TABS = ["Instructions","Define Bracket","Add Loads","Output"];
 
+  // ---- Helpers
   function setDebug(obj){ document.getElementById("debug").textContent = (typeof obj === "string") ? obj : JSON.stringify(obj,null,2); }
-
   function apiBase(){ return (document.getElementById("api").value.trim() || "http://localhost:8000").replace(/\/+$/,''); }
+  function token(){ return localStorage.getItem(LS_TOKEN) || ""; }
   function authHeader(){
-    const t = localStorage.getItem(LS_TOKEN);
+    const t = token();
     return t ? { "Authorization":"Bearer " + t } : {};
+  }
+  function isAuthed(){ return !!token(); }
+
+  async function apiFetch(path, opts={}){
+    const url = apiBase() + path;
+    const headers = { ...(opts.headers||{}), ...authHeader() };
+    const r = await fetch(url, { ...opts, headers });
+    let body = null;
+    const ct = r.headers.get("content-type") || "";
+    if(ct.includes("application/json")) body = await r.json().catch(()=>null);
+    else body = await r.text().catch(()=>null);
+    return { r, body };
+  }
+
+  // ---- UI boot
+  function loadState(){
+	const defaultApi = `${location.protocol}//${location.hostname}:8000`;
+	const a = localStorage.getItem(LS_API) || defaultApi;
+    document.getElementById("api").value = a;
+    document.getElementById("apiBasePill").textContent = a;
+    syncAuthPill();
+    renderTabs();
+    renderTab();
+    renderSvg();
+    refreshProjects(); // will succeed only after login
   }
 
   function saveApi(){
@@ -331,290 +374,580 @@
     document.getElementById("apiMsg").textContent = "Saved.";
   }
 
-  function loadState(){
-    const a = localStorage.getItem(LS_API) || "http://localhost:8000";
-    document.getElementById("api").value = a;
-    document.getElementById("apiBasePill").textContent = a;
-    renderTabs();
-    renderTab();
+  function syncAuthPill(){
+    document.getElementById("authPill").textContent = isAuthed() ? "Logged in" : "Not logged in";
   }
 
+  // ---- Auth
   async function register(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const r = await fetch(apiBase()+"/auth/register",{
-      method:"POST", headers:{ "Content-Type":"application/json" },
+    const { r, body } = await apiFetch("/auth/register",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({email,password})
     });
-    const j = await r.json().catch(()=>({}));
-    document.getElementById("authMsg").textContent = r.ok ? "Registered." : (j.detail || "Error");
-    setDebug(j);
+    document.getElementById("authMsg").textContent = r.ok ? "Registered." : (body?.detail || "Error");
+    setDebug(body || {status:r.status});
   }
 
   async function login(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const r = await fetch(apiBase()+"/auth/login",{
-      method:"POST", headers:{ "Content-Type":"application/json" },
+    const url = apiBase()+"/auth/login";
+    const r = await fetch(url,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({email,password})
     });
-    const j = await r.json().catch(()=>({}));
+    const body = await r.json().catch(()=>({}));
     if(r.ok){
-      localStorage.setItem(LS_TOKEN, j.access_token);
+      localStorage.setItem(LS_TOKEN, body.access_token);
       document.getElementById("authMsg").textContent = "Logged in.";
-      refreshProjects();
+      syncAuthPill();
+      await refreshProjects();
     } else {
-      document.getElementById("authMsg").textContent = j.detail || "Error";
+      document.getElementById("authMsg").textContent = body.detail || "Error";
     }
-    setDebug(j);
+    setDebug(body);
   }
 
   function logout(){
     localStorage.removeItem(LS_TOKEN);
-    currentProject = null;
+    state.project = null;
+    state.lastResult = null;
+    syncAuthPill();
     document.getElementById("projectSelect").innerHTML = '<option value="">Select project…</option>';
     document.getElementById("wsProjectTitle").textContent = "No project selected";
     document.getElementById("wsProjectSub").textContent = "";
+    renderResult(null);
     setDebug("Logged out.");
   }
 
-  async function uploadCsv(){
-    const f = document.getElementById("csvFile").files[0];
-    const typ = document.getElementById("csvType").value;
-    if(!f) return;
-    const fd = new FormData(); fd.append("file", f);
-    const r = await fetch(apiBase()+"/library/import/"+typ,{
-      method:"POST", headers: authHeader(), body: fd
-    });
-    const j = await r.json().catch(()=>({}));
-    document.getElementById("csvMsg").textContent = r.ok ? `Imported ${j.inserted}/${j.rows}` : (j.detail || "Error");
-    setDebug(j);
-  }
-
-  async function createProject(){
-    const name = document.getElementById("projName").value.trim() || "Untitled";
-    const project_ref = document.getElementById("projRef").value.trim() || "PRJ-001";
-    const r = await fetch(apiBase()+"/projects",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json", ...authHeader() },
-      body: JSON.stringify({ name, project_ref })
-    });
-    const j = await r.json().catch(()=>({}));
-    document.getElementById("projMsg").textContent = r.ok ? "Created." : (j.detail || "Error");
-    setDebug(j);
-    refreshProjects();
-  }
-
+  // ---- Projects
   async function refreshProjects(){
-    const r = await fetch(apiBase()+"/projects", { headers: authHeader() });
-    const j = await r.json().catch(()=>({}));
-    if(!r.ok){ setDebug(j); return; }
+    if(!isAuthed()){
+      document.getElementById("wsWarn").textContent = "Login to load projects.";
+      return;
+    }
+    document.getElementById("wsWarn").textContent = "";
+    const { r, body } = await apiFetch("/projects");
+    if(!r.ok){
+      setDebug(body || {status:r.status});
+      document.getElementById("wsWarn").textContent = "Could not load projects. Check API base URL and token.";
+      return;
+    }
 
     const sel = document.getElementById("projectSelect");
     const cur = sel.value;
     sel.innerHTML = '<option value="">Select project…</option>';
-    j.forEach(p=>{
+    (body||[]).forEach(p=>{
       const opt = document.createElement("option");
       opt.value = p.id;
       opt.textContent = `${p.project_ref || "—"} · ${p.name}`;
       sel.appendChild(opt);
     });
-    if(cur){ sel.value = cur; }
-    setDebug({projects:j.length});
+    if(cur) sel.value = cur;
+    setDebug({projects:(body||[]).length});
   }
 
   async function onSelectProject(){
     const id = document.getElementById("projectSelect").value;
-    if(!id){ currentProject=null; return; }
-    const r = await fetch(apiBase()+"/projects/"+id, { headers: authHeader() });
-    const j = await r.json().catch(()=>({}));
-    if(!r.ok){ setDebug(j); return; }
-    currentProject = j;
-    document.getElementById("wsProjectTitle").textContent = j.name;
-    document.getElementById("wsProjectSub").textContent = `Ref: ${j.project_ref} · ID: ${j.id}`;
-    document.getElementById("wsMsg").textContent = "Project loaded.";
-    setDebug(j);
+    if(!id){ state.project=null; renderProjectHeader(); return; }
+    const { r, body } = await apiFetch("/projects/"+id);
+    if(!r.ok){ setDebug(body || {status:r.status}); return; }
+    state.project = body;
+    renderProjectHeader();
+    state.lastResult = null;
+    renderResult(null);
+
+    // NGB-like: run an initial check as soon as a project is selected
+    debounceCheck();
+    setDebug(body);
   }
 
+  function renderProjectHeader(){
+    if(!state.project){
+      document.getElementById("wsProjectTitle").textContent = "No project selected";
+      document.getElementById("wsProjectSub").textContent = "";
+      return;
+    }
+    document.getElementById("wsProjectTitle").textContent = state.project.name;
+    document.getElementById("wsProjectSub").textContent = `Ref: ${state.project.project_ref} · ID: ${state.project.id}`;
+  }
+
+  // ---- New project modal
+  function openProjectModal(){ document.getElementById("projBack").style.display="flex"; }
+  function closeProjectModal(){ document.getElementById("projBack").style.display="none"; }
+
+  async function createProject(){
+    const name = document.getElementById("projName").value.trim() || "Untitled";
+    const project_ref = document.getElementById("projRef").value.trim() || "PRJ-001";
+    const { r, body } = await apiFetch("/projects",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ name, project_ref })
+    });
+    document.getElementById("projMsg").textContent = r.ok ? "Created." : (body?.detail || "Error");
+    setDebug(body || {status:r.status});
+    if(r.ok){
+      await refreshProjects();
+      closeProjectModal();
+      // auto-select
+      const sel = document.getElementById("projectSelect");
+      sel.value = body.id;
+      await onSelectProject();
+    }
+  }
+
+  // ---- CSV upload
+  async function uploadCsv(){
+    const f = document.getElementById("csvFile").files[0];
+    const typ = document.getElementById("csvType").value;
+    if(!f) return;
+    const fd = new FormData(); fd.append("file", f);
+    const { r, body } = await apiFetch("/library/import/"+typ,{ method:"POST", body: fd });
+    document.getElementById("csvMsg").textContent = r.ok ? `Imported ${body.inserted}/${body.rows}` : (body?.detail || "Error");
+    setDebug(body || {status:r.status});
+  }
+
+  // ---- Tabs + tab render
   function renderTabs(){
     const wrap = document.getElementById("tabs");
     wrap.innerHTML = "";
     TABS.forEach(t=>{
       const b = document.createElement("div");
-      b.className = "tab" + (t===currentTab ? " active" : "");
+      b.className = "tab" + (t===state.tab ? " active" : "");
       b.textContent = t;
-      b.onclick = ()=>{ currentTab=t; renderTabs(); renderTab(); };
+      b.onclick = ()=>{ state.tab=t; renderTabs(); renderTab(); };
       wrap.appendChild(b);
     });
   }
 
   function renderTab(){
     const el = document.getElementById("tabContent");
-
-    if(currentTab==="Instructions"){
+    if(state.tab==="Instructions"){
       el.innerHTML = `
-        <div class="muted">Workflow (like NGB): define bracket → add services → output PDF.</div>
+        <div class="muted">Trapeze bracket tool (v1).</div>
         <div class="hr"></div>
-        <div class="muted">For now this UI drives the existing API endpoints:</div>
-        <div class="muted">• POST /projects/{id}/check</div>
-        <div class="muted">• GET /projects/{id}/pdf</div>
+        <div class="muted">Use <b>Define Bracket</b> and <b>Add Loads</b> on the left.</div>
+        <div class="muted">The drawing and results update automatically as you change values.</div>
+        <div class="hr"></div>
+        <div class="muted">Tip: select a project first (top bar).</div>
       `;
       return;
     }
 
-    if(currentTab==="Define Bracket"){
+    if(state.tab==="Define Bracket"){
       el.innerHTML = `
-        <div style="font-weight:800; margin-bottom:8px">Options</div>
-        <div class="grid2">
+        <div style="font-weight:900; margin-bottom:8px">Define Bracket</div>
+
+        <label class="muted">Bracket Ref</label>
+        <input id="bracket_ref" value="${escapeHtml(state.bracket.bracket_ref)}" />
+
+        <div style="height:10px"></div>
+
+        <div class="miniGrid">
           <div>
             <label class="muted">Span (mm)</label>
-            <input id="span" type="number" value="1200"/>
+            <input id="span_mm" type="number" min="200" max="4000" value="${state.bracket.span_mm}" />
           </div>
           <div>
-            <label class="muted">Tiers</label>
-            <input id="tiers" type="number" value="1" min="1" max="3"/>
+            <label class="muted">Tiers (1–3)</label>
+            <input id="tier_count" type="number" min="1" max="3" value="${state.bracket.tier_count}" />
           </div>
         </div>
 
         <div style="height:10px"></div>
 
-        <div class="grid2">
+        <div class="miniGrid">
           <div>
             <label class="muted">Profile ID</label>
-            <input id="profile_id" value="GEN_41x41"/>
+            <input id="profile_id" value="${escapeHtml(state.bracket.profile_id)}" />
           </div>
           <div>
             <label class="muted">Rod ID</label>
-            <input id="rod_id" value="GEN_M10"/>
+            <input id="rod_id" value="${escapeHtml(state.bracket.rod_id)}" />
           </div>
         </div>
 
         <div style="height:10px"></div>
 
-        <div class="grid2">
+        <div class="miniGrid">
           <div>
             <label class="muted">Washer ID</label>
-            <input id="washer_id" value="GEN_PENNY_M10"/>
+            <input id="washer_id" value="${escapeHtml(state.bracket.washer_id)}" />
           </div>
           <div>
             <label class="muted">Anchor ID</label>
-            <input id="anchor_id" value="GEN_STEEL_M10"/>
+            <input id="anchor_id" value="${escapeHtml(state.bracket.anchor_id)}" />
           </div>
         </div>
 
         <div style="height:10px"></div>
 
-        <label class="muted">Tier loads (N) — comma separated (e.g. 1500,800,500)</label>
-        <input id="tier_loads" value="1500"/>
+        <label class="muted">Fire condition</label>
+        <select id="fire_condition">
+          <option value="false" ${state.bracket.fire_condition ? "" : "selected"}>false</option>
+          <option value="true" ${state.bracket.fire_condition ? "selected" : ""}>true</option>
+        </select>
 
-        <div class="row" style="margin-top:10px">
-          <label class="muted">Fire condition</label>
-          <select id="fire_condition" style="max-width:160px">
-            <option value="false">false</option>
-            <option value="true">true</option>
-          </select>
-        </div>
-      `;
-      return;
-    }
-
-    if(currentTab==="Output Bracket"){
-      el.innerHTML = `
-        <div style="font-weight:800; margin-bottom:8px">Project specific details</div>
-        <label class="muted">Bracket reference</label>
-        <input id="bracket_ref" value="BKT-001" />
         <div class="hr"></div>
-        <div class="row">
-          <button class="primary" onclick="downloadPdf()">Print to PDF</button>
-          <button onclick="runCheck()">Run check</button>
-        </div>
-        <div class="muted" style="margin-top:8px">We’ll add Save/Save As/Open once project payload supports it.</div>
+        <div class="muted">Changes trigger a live redraw and a debounced check (when project selected).</div>
       `;
+
+      wireDefineInputs();
       return;
     }
 
-    // Placeholder tabs for now
+    if(state.tab==="Add Loads"){
+      el.innerHTML = `
+        <div style="font-weight:900; margin-bottom:8px">Tier Loads (N)</div>
+        <div class="muted">Add one or more loads per tier. Total per tier is summed.</div>
+        <div class="hr"></div>
+        <div id="loadsEditor"></div>
+      `;
+      renderLoadsEditor();
+      return;
+    }
+
+    // Output
     el.innerHTML = `
-      <div class="muted">${currentTab} (UI stub)</div>
-      <div class="muted" style="margin-top:8px">Next: service entry tables per tier like NGB.</div>
+      <div style="font-weight:900; margin-bottom:8px">Output</div>
+      <div class="muted">Use <b>Run check</b> or just edit inputs to update results.</div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <button class="primary" onclick="runCheckNow()">Run check</button>
+        <button onclick="openResults()">Results</button>
+        <button onclick="downloadPdf()">Print PDF</button>
+      </div>
     `;
   }
 
-  function showModal(obj){
-    document.getElementById("modalPre").textContent = typeof obj==="string" ? obj : JSON.stringify(obj,null,2);
-    document.getElementById("modalBack").style.display = "flex";
-  }
-  function hideModal(){ document.getElementById("modalBack").style.display = "none"; }
-  function closeModal(){ hideModal(); }
+  function wireDefineInputs(){
+    const map = [
+      ["bracket_ref","bracket_ref", v=>String(v||"")],
+      ["span_mm","span_mm", v=>clampInt(v,200,4000,1200)],
+      ["tier_count","tier_count", v=>clampInt(v,1,3,1)],
+      ["profile_id","profile_id", v=>String(v||"")],
+      ["rod_id","rod_id", v=>String(v||"")],
+      ["washer_id","washer_id", v=>String(v||"")],
+      ["anchor_id","anchor_id", v=>String(v||"")],
+      ["fire_condition","fire_condition", v=>(String(v)==="true")]
+    ];
 
-  async function runCheck(){
-    if(!currentProject){
+    map.forEach(([id, key, fn])=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener("input", ()=>{
+        state.bracket[key] = fn(el.value);
+        // if tiers changed, normalise loads arrays
+        if(key==="tier_count") normaliseTiers();
+        renderSvg();
+        debounceCheck();
+      });
+      el.addEventListener("change", ()=>{
+        state.bracket[key] = fn(el.value);
+        if(key==="tier_count") normaliseTiers();
+        renderSvg();
+        debounceCheck();
+      });
+    });
+  }
+
+  function normaliseTiers(){
+    const n = state.bracket.tier_count;
+    for(let t=1;t<=3;t++){
+      if(t<=n){
+        if(!Array.isArray(state.loads[t])) state.loads[t]=[];
+        if(state.loads[t].length===0) state.loads[t]=[1500]; // sensible default
+      } else {
+        state.loads[t]=[];
+      }
+    }
+    if(state.tab==="Add Loads") renderLoadsEditor();
+  }
+
+  function renderLoadsEditor(){
+    const wrap = document.getElementById("loadsEditor");
+    if(!wrap) return;
+    wrap.innerHTML = "";
+
+    const n = state.bracket.tier_count;
+    for(let t=1;t<=n;t++){
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.background = "rgba(0,0,0,.10)";
+      card.style.marginBottom = "10px";
+
+      const total = (state.loads[t]||[]).reduce((a,b)=>a+(Number(b)||0),0);
+
+      card.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <div style="font-weight:900">Tier ${t}</div>
+          <div class="muted">Total: <b>${total.toFixed(0)} N</b></div>
+        </div>
+        <div style="height:8px"></div>
+        <div id="tier_${t}_rows"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="small" onclick="addLoad(${t})">+ Add load</button>
+          <button class="small" onclick="clearLoads(${t})">Clear</button>
+        </div>
+      `;
+
+      wrap.appendChild(card);
+
+      const rows = card.querySelector(`#tier_${t}_rows`);
+      (state.loads[t]||[]).forEach((val, idx)=>{
+        const r = document.createElement("div");
+        r.className = "loadRow";
+        r.innerHTML = `
+          <input type="number" min="0" step="1" value="${Number(val)||0}" />
+          <button class="small" title="Remove" aria-label="Remove">✕</button>
+        `;
+        const inp = r.querySelector("input");
+        const btn = r.querySelector("button");
+        inp.addEventListener("input", ()=>{
+          state.loads[t][idx] = Number(inp.value)||0;
+          renderSvg();
+          debounceCheck();
+          // update tier totals without full rerender: easiest is rerender editor
+          renderLoadsEditor();
+        });
+        btn.addEventListener("click", ()=>{
+          state.loads[t].splice(idx,1);
+          if(state.loads[t].length===0) state.loads[t]=[0];
+          renderSvg();
+          debounceCheck();
+          renderLoadsEditor();
+        });
+        rows.appendChild(r);
+      });
+    }
+
+    renderSvg();
+    debounceCheck();
+  }
+
+  function addLoad(t){
+    state.loads[t] = state.loads[t] || [];
+    state.loads[t].push(0);
+    renderLoadsEditor();
+  }
+  function clearLoads(t){
+    state.loads[t] = [0];
+    renderLoadsEditor();
+  }
+
+  // ---- SVG render (live drawing)
+  function renderSvg(){
+    const svg = document.getElementById("bracketSvg");
+    if(!svg) return;
+
+    const span = state.bracket.span_mm;
+    const tiers = state.bracket.tier_count;
+
+    // simple scale: map span to drawing width
+    const left = 180, right = 820;
+    const rodX1 = 280, rodX2 = 720;
+    const topY = 120, bottomY = 460;
+
+    svg.innerHTML = `
+      <defs>
+        <style>
+          .line{ stroke:rgba(255,255,255,.7); stroke-width:5; }
+          .thin{ stroke:rgba(255,255,255,.35); stroke-width:2; }
+          .txt{ fill:rgba(255,255,255,.92); font: 18px system-ui; font-weight:900; }
+          .mut{ fill:rgba(255,255,255,.55); font: 14px system-ui; }
+          .pill{ fill:rgba(37,99,235,.18); stroke:rgba(37,99,235,.6); stroke-width:1; }
+        </style>
+      </defs>
+
+      <text x="20" y="34" class="txt">Trapeze Bracket (live)</text>
+      <text x="20" y="58" class="mut">Span: ${span} mm · Tiers: ${tiers} · Ref: ${escapeXml(state.bracket.bracket_ref)}</text>
+
+      <!-- rods -->
+      <line x1="${rodX1}" y1="${topY}" x2="${rodX1}" y2="${bottomY}" class="thin"/>
+      <line x1="${rodX2}" y1="${topY}" x2="${rodX2}" y2="${bottomY}" class="thin"/>
+
+      <text x="${rodX1-18}" y="${topY-10}" class="mut">${escapeXml(state.bracket.rod_id)}</text>
+      <text x="${rodX2-18}" y="${topY-10}" class="mut">${escapeXml(state.bracket.rod_id)}</text>
+
+      <!-- span dim -->
+      <line x1="${left}" y1="${topY+10}" x2="${right}" y2="${topY+10}" class="thin"/>
+      <line x1="${left}" y1="${topY+4}" x2="${left}" y2="${topY+16}" class="thin"/>
+      <line x1="${right}" y1="${topY+4}" x2="${right}" y2="${topY+16}" class="thin"/>
+      <text x="${(left+right)/2 - 40}" y="${topY+38}" class="mut">${span} mm</text>
+    `;
+
+    // tier y positions (bottom-up like NGB)
+    const tierYs = [];
+    if(tiers===1) tierYs.push(380);
+    if(tiers===2) tierYs.push(360, 260);
+    if(tiers===3) tierYs.push(420, 300, 180);
+
+    tierYs.slice(0,tiers).forEach((y, idx)=>{
+      const tier = tiers - idx; // label as Tier 1 at bottom
+      const total = (state.loads[tier]||[]).reduce((a,b)=>a+(Number(b)||0),0);
+      svg.innerHTML += `
+        <line x1="${rodX1-120}" y1="${y}" x2="${rodX2+120}" y2="${y}" class="line"/>
+        <text x="${rodX2+135}" y="${y+6}" class="mut">Tier ${tier}</text>
+        <rect x="20" y="${y-18}" width="210" height="28" rx="10" class="pill"></rect>
+        <text x="30" y="${y+2}" class="mut">Tier ${tier} load: <tspan class="txt" style="font-size:14px">${total.toFixed(0)} N</tspan></text>
+      `;
+    });
+  }
+
+  // ---- Check / results (debounced like desktop tool)
+  function debounceCheck(){
+    if(!state.project) return;
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(()=>runCheckInternal(false), 500);
+  }
+
+  async function runCheckNow(){
+    await runCheckInternal(true);
+  }
+
+  function buildTierLoadsArray(){
+    const n = state.bracket.tier_count;
+    const out = [];
+    for(let t=1;t<=n;t++){
+      const total = (state.loads[t]||[]).reduce((a,b)=>a+(Number(b)||0),0);
+      out.push(total);
+    }
+    return out;
+  }
+
+  async function runCheckInternal(showModalOnSuccess){
+    if(!state.project){
       document.getElementById("wsMsg").textContent = "Select a project first.";
       return;
     }
 
-    const span_mm = parseInt((document.getElementById("span")||{}).value || "1200",10);
-    const tier_count = parseInt((document.getElementById("tiers")||{}).value || "1",10);
-    const loadsRaw = ((document.getElementById("tier_loads")||{}).value || "1500")
-      .split(",").map(s=>s.trim()).filter(Boolean).map(x=>Number(x));
-
     const payload = {
-      bracket_ref: (document.getElementById("bracket_ref")||{}).value || "BKT-001",
-      span_mm,
-      tier_count,
-      tier_loads_N: loadsRaw,
-      profile_id: (document.getElementById("profile_id")||{}).value || null,
-      rod_id: (document.getElementById("rod_id")||{}).value || null,
-      washer_id: (document.getElementById("washer_id")||{}).value || null,
-      anchor_id: (document.getElementById("anchor_id")||{}).value || null,
-      fire_condition: ((document.getElementById("fire_condition")||{}).value || "false")==="true"
+      bracket_ref: state.bracket.bracket_ref,
+      span_mm: state.bracket.span_mm,
+      tier_count: state.bracket.tier_count,
+      tier_loads_N: buildTierLoadsArray(),
+      profile_id: state.bracket.profile_id,
+      rod_id: state.bracket.rod_id,
+      washer_id: state.bracket.washer_id,
+      anchor_id: state.bracket.anchor_id,
+      fire_condition: !!state.bracket.fire_condition
     };
 
-    const r = await fetch(apiBase()+`/projects/${currentProject.id}/check`,{
+    document.getElementById("wsMsg").textContent = "Checking…";
+
+    const { r, body } = await apiFetch(`/projects/${state.project.id}/check`,{
       method:"POST",
-      headers:{ "Content-Type":"application/json", ...authHeader() },
+      headers:{ "Content-Type":"application/json" },
       body: JSON.stringify(payload)
     });
-    const j = await r.json().catch(()=>({}));
-    setDebug(j);
 
     if(!r.ok){
-      document.getElementById("wsMsg").textContent = j.detail || "Check error";
+      document.getElementById("wsMsg").textContent = body?.detail || "Check error";
+      setDebug(body || {status:r.status});
       return;
     }
 
-    // Update headline KPIs
-    const statusEl = document.getElementById("kpiStatus");
-    statusEl.textContent = j.status;
-    statusEl.className = "badge " + (j.status==="PASS" ? "pass" : "fail");
-    document.getElementById("kpiTotal").textContent = String(j.total_weight_kg ?? "0.0");
-    document.getElementById("kpiGov").textContent = j.governing_check || "—";
+    state.lastResult = body;
+    renderResult(body);
+    document.getElementById("wsMsg").textContent = "Updated.";
 
-    // Notes
+    if(showModalOnSuccess) showModal(body);
+  }
+
+  function renderResult(res){
+    const statusEl = document.getElementById("kpiStatus");
+    const totalEl = document.getElementById("kpiTotal");
+    const govEl = document.getElementById("kpiGov");
     const notesWrap = document.getElementById("notes");
+
+    if(!res){
+      statusEl.textContent = "—";
+      statusEl.className = "badge";
+      totalEl.textContent = "0.0";
+      govEl.textContent = "—";
+      notesWrap.innerHTML = "";
+      return;
+    }
+
+    statusEl.textContent = res.status || "—";
+    statusEl.className = "badge " + ((res.status==="PASS") ? "pass" : (res.status==="FAIL" ? "fail" : ""));
+    totalEl.textContent = String(res.total_weight_kg ?? "0.0");
+    govEl.textContent = res.governing_check || "—";
+
     notesWrap.innerHTML = "";
-    (j.notes || []).forEach(n=>{
+    (res.notes||[]).forEach(n=>{
       const d = document.createElement("div");
-      d.className = "muted";
+      d.className = "noteLine muted";
       d.textContent = "• " + n;
       notesWrap.appendChild(d);
     });
 
-    // NGB-style popup
-    showModal(j);
+    setDebug(res);
   }
 
+  // ---- Results modal
+  function showModal(obj){
+    document.getElementById("modalPre").textContent = JSON.stringify(obj,null,2);
+    document.getElementById("modalBack").style.display = "flex";
+  }
+  function hideModal(){ document.getElementById("modalBack").style.display = "none"; }
+  function openResults(){
+    if(!state.lastResult){
+      showModal({info:"No results yet. Select a project and edit inputs to run a check."});
+      return;
+    }
+    showModal(state.lastResult);
+  }
+
+  // ---- PDF download (needs Authorization header)
   async function downloadPdf(){
-    if(!currentProject){
+    if(!state.project){
       document.getElementById("wsMsg").textContent = "Select a project first.";
       return;
     }
-    const url = apiBase()+`/projects/${currentProject.id}/pdf`;
-    window.open(url, "_blank");
+    if(!isAuthed()){
+      document.getElementById("wsMsg").textContent = "Login first.";
+      return;
+    }
+
+    document.getElementById("wsMsg").textContent = "Generating PDF…";
+
+    const url = apiBase() + `/projects/${state.project.id}/pdf`;
+    const r = await fetch(url, { headers: authHeader() });
+    if(!r.ok){
+      const t = await r.text().catch(()=> "");
+      document.getElementById("wsMsg").textContent = "PDF error";
+      setDebug({status:r.status, body:t});
+      return;
+    }
+    const blob = await r.blob();
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(state.project.project_ref||"project")}_${state.bracket.bracket_ref}_${stamp}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    document.getElementById("wsMsg").textContent = "PDF downloaded.";
   }
 
+  // ---- Small utils
+  function clampInt(v,min,max,def){
+    const n = parseInt(String(v||""),10);
+    if(Number.isNaN(n)) return def;
+    return Math.max(min, Math.min(max, n));
+  }
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function escapeXml(s){ return escapeHtml(s); }
+
+  // ---- Start
   loadState();
-  refreshProjects();
 </script>
 </body>
 </html>
