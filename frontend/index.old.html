@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MEP Bracket Tool (v0.1)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#0b0f14; color:#e9eef6; }
+    header { padding: 16px 20px; background:#111827; display:flex; justify-content:space-between; align-items:center; }
+    main { padding: 20px; max-width: 1100px; margin: 0 auto; }
+    .card { background:#0f172a; border:1px solid #1f2a44; border-radius:12px; padding:16px; margin: 12px 0; }
+    input, textarea, select { width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:#0b1220; color:#e9eef6; }
+    button { padding:10px 14px; border-radius:10px; border:1px solid #334155; background:#1f2937; color:#e9eef6; cursor:pointer; }
+    button.primary { background:#2563eb; border-color:#2563eb; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row { display:flex; gap: 10px; align-items:center; }
+    .muted { color:#9ca3af; font-size: 13px; }
+    a { color:#93c5fd; }
+    pre { white-space:pre-wrap; background:#0b1220; padding:12px; border-radius:10px; border:1px solid #334155; }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <div style="font-weight:700">MEP Bracket Tool</div>
+    <div class="muted">Trapeze bracket MVP · Auth · Projects · PDF</div>
+  </div>
+  <div class="row">
+    <span id="apiBase" class="muted"></span>
+    <button onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h3>1) Connect</h3>
+    <div class="grid">
+      <div>
+        <label>API Base URL</label>
+        <input id="api" placeholder="http://localhost:8000" />
+        <div class="muted">Set this if you're proxying (e.g. https://brackets.bumbledragon.xyz/api)</div>
+      </div>
+      <div>
+        <label>Auth Token (auto)</label>
+        <input id="token" placeholder="(login to populate)" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button onclick="saveApi()">Save API</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2) Register / Login</h3>
+    <div class="grid">
+      <div>
+        <label>Email</label>
+        <input id="email" placeholder="you@company.com" />
+      </div>
+      <div>
+        <label>Password</label>
+        <input id="password" type="password" placeholder="••••••••" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button onclick="register()">Register</button>
+      <button class="primary" onclick="login()">Login</button>
+      <span id="authMsg" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3) Import library CSVs</h3>
+    <p class="muted">Upload your filled CSV templates (profiles/rods/washers/anchors). This repo ships empty placeholders only.</p>
+    <input id="csvFile" type="file" />
+    <div class="row" style="margin-top:10px">
+      <select id="csvType">
+        <option value="profiles">profiles</option>
+        <option value="rods">rods</option>
+        <option value="washers">washers</option>
+        <option value="anchors">anchors</option>
+      </select>
+      <button class="primary" onclick="uploadCsv()">Upload</button>
+      <span id="csvMsg" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>4) Projects</h3>
+    <div class="grid">
+      <div>
+        <label>Project name</label>
+        <input id="projName" placeholder="Example Project" />
+      </div>
+      <div>
+        <label>Bracket reference</label>
+        <input id="bracketRef" placeholder="BKT001" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="primary" onclick="createProject()">Create</button>
+      <button onclick="refreshProjects()">Refresh list</button>
+      <span id="projMsg" class="muted"></span>
+    </div>
+
+    <div id="projects"></div>
+  </div>
+
+  <div class="card">
+    <h3>Debug</h3>
+    <pre id="debug"></pre>
+  </div>
+</main>
+
+<script>
+  const LS_API = "mep_api_base";
+  const LS_TOKEN = "mep_token";
+
+  function apiBase() {
+    return document.getElementById("api").value.trim() || "http://localhost:8000";
+  }
+
+  function setDebug(obj) {
+    document.getElementById("debug").textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+  }
+
+  function saveApi() {
+    localStorage.setItem(LS_API, apiBase());
+    document.getElementById("apiBase").textContent = apiBase();
+    setDebug("Saved API base.");
+  }
+
+  function loadState() {
+    const a = localStorage.getItem(LS_API) || "http://localhost:8000";
+    document.getElementById("api").value = a;
+    document.getElementById("apiBase").textContent = a;
+    const t = localStorage.getItem(LS_TOKEN) || "";
+    document.getElementById("token").value = t;
+  }
+
+  function authHeader() {
+    const t = localStorage.getItem(LS_TOKEN);
+    return t ? { "Authorization": "Bearer " + t } : {};
+  }
+
+  async function register() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const r = await fetch(apiBase() + "/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const j = await r.json();
+    document.getElementById("authMsg").textContent = r.ok ? "Registered." : (j.detail || "Error");
+    setDebug(j);
+  }
+
+  async function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const r = await fetch(apiBase() + "/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const j = await r.json();
+    if (r.ok) {
+      localStorage.setItem(LS_TOKEN, j.access_token);
+      document.getElementById("token").value = j.access_token;
+      document.getElementById("authMsg").textContent = "Logged in.";
+      refreshProjects();
+    } else {
+      document.getElementById("authMsg").textContent = j.detail || "Error";
+    }
+    setDebug(j);
+  }
+
+  function logout() {
+    localStorage.removeItem(LS_TOKEN);
+    document.getElementById("token").value = "";
+    document.getElementById("projects").innerHTML = "";
+    setDebug("Logged out.");
+  }
+
+  async function uploadCsv() {
+    const f = document.getElementById("csvFile").files[0];
+    const typ = document.getElementById("csvType").value;
+    if (!f) return;
+    const fd = new FormData();
+    fd.append("file", f);
+    const r = await fetch(apiBase() + "/library/import/" + typ, {
+      method: "POST",
+      headers: authHeader(),
+      body: fd
+    });
+    const j = await r.json();
+    document.getElementById("csvMsg").textContent = r.ok ? "Imported." : (j.detail || "Error");
+    setDebug(j);
+  }
+
+  async function createProject() {
+    const name = document.getElementById("projName").value.trim() || "Untitled";
+    const bracket_reference = document.getElementById("bracketRef").value.trim() || "BKT001";
+    const payload = {
+      name,
+      bracket_reference,
+      // minimal trapeze defaults (edit later in UI v1)
+      bracket: {
+        spacing_mm: 1500,
+        overall_width_mm: 600,
+        tier_count: 3,
+        tier_spacing_mm: 300,
+        drop_rod_size: "M10",
+        strut_profile_id: null,
+        washer_id: null,
+        anchor_id: null
+      },
+      services: []
+    };
+    const r = await fetch(apiBase() + "/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeader() },
+      body: JSON.stringify(payload)
+    });
+    const j = await r.json();
+    document.getElementById("projMsg").textContent = r.ok ? "Created." : (j.detail || "Error");
+    setDebug(j);
+    refreshProjects();
+  }
+
+  async function refreshProjects() {
+    const r = await fetch(apiBase() + "/projects", { headers: authHeader() });
+    const j = await r.json();
+    if (!r.ok) {
+      setDebug(j);
+      return;
+    }
+    const wrap = document.getElementById("projects");
+    wrap.innerHTML = "";
+    j.items.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div style="font-weight:700">${p.name}</div>
+            <div class="muted">ID: ${p.id} · Ref: ${p.bracket_reference} · Updated: ${p.updated_at}</div>
+          </div>
+          <div class="row">
+            <button onclick="checkProject('${p.id}')">Check</button>
+            <button class="primary" onclick="downloadPdf('${p.id}')">PDF</button>
+          </div>
+        </div>
+      `;
+      wrap.appendChild(div);
+    });
+    setDebug(j);
+  }
+
+  async function checkProject(id) {
+    const r = await fetch(apiBase() + `/projects/${id}/check`, { method:"POST", headers: authHeader() });
+    const j = await r.json();
+    setDebug(j);
+  }
+
+  function downloadPdf(id) {
+    const url = apiBase() + `/projects/${id}/pdf`;
+    // open in new tab with auth token via query (backend supports it)
+    const token = localStorage.getItem(LS_TOKEN) || "";
+    window.open(url + "?token=" + encodeURIComponent(token), "_blank");
+  }
+
+  loadState();
+</script>
+</body>
+</html>

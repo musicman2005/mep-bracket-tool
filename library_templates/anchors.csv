@@ -1,0 +1,2 @@
+manufacturer_id,anchor_id,anchor_name,substrate_type,diameter_mm,embedment_mm,allowable_tension_N,allowable_shear_N,fire_reduction_factor,notes,source_ref
+generic,GEN_STEEL_M10,Generic Steel Fixing M10,steel,10,0,10000,7000,0.6,Generic placeholder,Placeholder
