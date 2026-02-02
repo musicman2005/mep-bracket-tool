@@ -1,315 +1,116 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MEP Bracket Tool</title>
-  <meta http-equiv="Cache-Control" content="no-store" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <style>
-    :root{
-      --bg:#0b0f14; --panel:#0f172a; --panel2:#0b1220; --border:#1f2a44;
-      --text:#e9eef6; --muted:#9ca3af; --blue:#2563eb; --green:#22c55e; --red:#ef4444;
-      --radius:12px;
-    }
-    *{ box-sizing:border-box; }
-    body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
-    header{
-      height:58px; padding:0 16px; background:#111827; border-bottom:1px solid var(--border);
-      display:flex; align-items:center; justify-content:space-between;
-      position:sticky; top:0; z-index:10;
-    }
-    header .brand{ font-weight:900; letter-spacing:.2px; }
-    header .right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-    .pill{ border:1px solid var(--border); background:rgba(255,255,255,.03); padding:6px 10px; border-radius:999px; color:var(--muted); font-size:12px; }
-    main{ max-width:1500px; margin:0 auto; padding:16px; }
-    .card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; }
-    input,select,textarea{
-      width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:var(--panel2); color:var(--text);
-    }
-    button{
-      padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#1f2937; color:var(--text); cursor:pointer;
-    }
-    button.primary{ background:var(--blue); border-color:var(--blue); }
-    button.ghost{ background:transparent; }
-    button.small{ padding:8px 10px; font-size:12px; border-radius:10px; }
-    button:disabled{ opacity:.5; cursor:not-allowed; }
-    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .row{ display:flex; gap:10px; align-items:center; }
-    .muted{ color:var(--muted); font-size:12px; }
-    .hr{ height:1px; background:var(--border); margin:12px 0; }
-
-    .workspace{
-      display:grid;
-      grid-template-columns: 420px 1fr;
-      gap:14px;
-      align-items:start;
-      margin-top:14px;
-    }
-
-    .tabs{ display:flex; gap:6px; flex-wrap:wrap; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px; }
-    .tab{
-      padding:8px 10px; border-radius:10px; border:1px solid var(--border);
-      background:rgba(255,255,255,.03); color:var(--muted); font-size:12px; cursor:pointer;
-      user-select:none;
-    }
-    .tab.active{ background:rgba(37,99,235,.18); border-color:rgba(37,99,235,.6); color:var(--text); }
-
-    .stage{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:14px;
-      min-height:680px;
-      position:relative;
-      overflow:hidden;
-    }
-    .stageTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
-    .kpis{ display:flex; gap:10px; flex-wrap:wrap; }
-    .kpi{
-      background:rgba(0,0,0,.18); border:1px solid var(--border);
-      padding:8px 10px; border-radius:12px; min-width:160px;
-    }
-    .kpi .lbl{ font-size:11px; color:var(--muted); }
-    .kpi .val{ font-size:16px; font-weight:900; margin-top:2px; }
-    .badge{ font-weight:900; }
-    .badge.pass{ color:var(--green); }
-    .badge.fail{ color:var(--red); }
-
-    .svgWrap{
-      border:1px dashed rgba(255,255,255,.15);
-      border-radius:12px;
-      padding:10px;
-      background:rgba(0,0,0,.12);
-    }
-
-    .noteLine{ padding:6px 0; border-bottom:1px solid rgba(255,255,255,.06); }
-    .noteLine:last-child{ border-bottom:none; }
-
-    .modalBack{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:20px; }
-    .modal{ width:min(980px, 100%); background:#0b1220; border:1px solid var(--border); border-radius:16px; box-shadow:0 20px 70px rgba(0,0,0,.5); overflow:hidden; }
-    .modalHeader{ padding:12px 14px; background:#0f172a; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .modalBody{ padding:14px; max-height:70vh; overflow:auto; }
-    pre{ margin:0; white-space:pre-wrap; background:rgba(0,0,0,.18); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.08); }
-
-    .hint{
-      padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
-      background:rgba(37,99,235,.10); color:var(--text); font-size:12px;
-    }
-
-    .loadRow{
-      display:grid;
-      grid-template-columns: 1fr 90px;
-      gap:8px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-
-    .miniGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:8px;
-    }
-
-    .danger{ color: #fecaca; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0b1220;color:#e6eefc}
+    .wrap{display:flex;min-height:100vh}
+    .side{width:280px;background:#0f1a33;border-right:1px solid rgba(255,255,255,.08);padding:14px;box-sizing:border-box}
+    .main{flex:1;padding:16px;box-sizing:border-box}
+    .card{background:#101c3a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{background:#2a6df5;border:none;color:white;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    input,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1734;color:#e6eefc}
+    label{display:block;font-size:12px;opacity:.85;margin:8px 0 6px}
+    .muted{opacity:.75;font-size:12px}
+    .tabs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .tab{padding:10px 10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:#0b1734}
+    .tab.active{background:#152a5a;border-color:rgba(255,255,255,.18)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;background:#0b1734;border:1px solid rgba(255,255,255,.10)}
+    pre{white-space:pre-wrap;background:#08122a;border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:10px}
+    svg{width:100%;height:auto;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#0b1734}
   </style>
 </head>
-
 <body>
-<header>
-  <div class="row" style="gap:12px">
-    <div class="brand">MEP Bracket Tool</div>
-    <div class="pill" id="apiBasePill"></div>
-    <div class="pill" id="authPill">Not logged in</div>
-  </div>
+<div class="wrap">
+  <div class="side">
+    <div style="font-weight:900;font-size:16px">MEP Bracket Tool</div>
+    <div class="muted">Trapeze (v2 UI) – library dropdowns enabled</div>
 
-  <div class="right">
-    <select id="projectSelect" style="min-width:260px" onchange="onSelectProject()">
-      <option value="">Select project…</option>
-    </select>
-    <button class="small" onclick="openProjectModal()">New Project</button>
-    <button class="small" onclick="refreshProjects()">Refresh</button>
-    <button class="small" onclick="openResults()">Results</button>
-    <button class="small" onclick="downloadPdf()">Print PDF</button>
-    <button class="small" onclick="logout()">Logout</button>
-  </div>
-</header>
-
-<main>
-  <div class="grid2">
-    <div class="card">
-      <div style="font-weight:900; margin-bottom:8px">Connect</div>
-      <label class="muted">API Base URL</label>
-      <input id="api" placeholder="http://192.168.10.181:8000" />
-      <div class="row" style="margin-top:10px">
-        <button onclick="saveApi()">Save API</button>
-        <span class="muted" id="apiMsg"></span>
-      </div>
-
-      <div class="hr"></div>
-
-      <div style="font-weight:900; margin-bottom:8px">Login</div>
-      <div class="grid2">
-        <div>
-          <label class="muted">Email</label>
-          <input id="email" placeholder="you@company.com" />
-        </div>
-        <div>
-          <label class="muted">Password</label>
-          <input id="password" type="password" placeholder="••••••••" />
-        </div>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button onclick="register()">Register</button>
-        <button class="primary" onclick="login()">Login</button>
-        <span id="authMsg" class="muted"></span>
-      </div>
-
-      <div class="hr"></div>
-
-      <div style="font-weight:900; margin-bottom:8px">Library import (CSV)</div>
-      <div class="muted">Upload templates to populate the DB. (You already proved this works.)</div>
-      <div class="row" style="margin-top:10px">
-        <select id="csvType">
-          <option value="profiles">profiles</option>
-          <option value="rods">rods</option>
-          <option value="washers">washers</option>
-          <option value="anchors">anchors</option>
-        </select>
-        <input id="csvFile" type="file" />
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button class="primary" onclick="uploadCsv()">Upload</button>
-        <span id="csvMsg" class="muted"></span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-weight:900; margin-bottom:8px">How this behaves (NGB-style)</div>
-      <div class="hint">
-        <div><b>Left:</b> define bracket options + tier loads.</div>
-        <div><b>Right:</b> live drawing + live check results.</div>
-        <div style="margin-top:6px">The check call is <b>debounced</b> while you type (like a desktop tool feel).</div>
-      </div>
-      <div class="hr"></div>
-      <div class="muted">
-        Current backend endpoints in use:
-        <div>• GET /projects</div>
-        <div>• POST /projects</div>
-        <div>• POST /projects/{id}/check</div>
-        <div>• GET /projects/{id}/pdf</div>
-      </div>
-      <div class="hr"></div>
-      <div class="muted danger" id="wsWarn"></div>
-    </div>
-  </div>
-
-  <div class="workspace">
-    <!-- Left -->
-    <div class="card">
-      <div class="tabs" id="tabs"></div>
-      <div id="tabContent"></div>
-
-      <div class="hr"></div>
-
+    <div class="card" style="margin-top:12px">
       <div class="row">
-        <button class="primary" onclick="runCheckNow()">Run check</button>
-        <button onclick="openResults()">View results</button>
-        <button onclick="downloadPdf()">Print PDF</button>
-      </div>
-      <div class="muted" id="wsMsg" style="margin-top:8px"></div>
-    </div>
-
-    <!-- Right -->
-    <div class="stage">
-      <div class="stageTop">
-        <div>
-          <div class="muted">Project</div>
-          <div style="font-weight:900; font-size:18px" id="wsProjectTitle">No project selected</div>
-          <div class="muted" id="wsProjectSub"></div>
-        </div>
-        <div class="kpis">
-          <div class="kpi">
-            <div class="lbl">Status</div>
-            <div class="val"><span id="kpiStatus" class="badge">—</span></div>
-          </div>
-          <div class="kpi">
-            <div class="lbl">Total (kg)</div>
-            <div class="val" id="kpiTotal">0.0</div>
-          </div>
-          <div class="kpi">
-            <div class="lbl">Governing</div>
-            <div class="val" id="kpiGov">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="svgWrap">
-        <svg id="bracketSvg" width="100%" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg"></svg>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="muted">Notes</div>
-      <div id="notes" style="margin-top:8px"></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <div style="font-weight:900; margin-bottom:8px">Debug</div>
-    <pre id="debug"></pre>
-  </div>
-</main>
-
-<!-- Results modal -->
-<div class="modalBack" id="modalBack" onclick="hideModal()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modalHeader">
-      <div style="font-weight:900">Calculation Results</div>
-      <div class="row">
-        <button class="small" onclick="downloadPdf()">Print PDF</button>
-        <button class="small" onclick="hideModal()">Close</button>
-      </div>
-    </div>
-    <div class="modalBody">
-      <pre id="modalPre"></pre>
-    </div>
-  </div>
-</div>
-
-<!-- New Project modal -->
-<div class="modalBack" id="projBack" onclick="closeProjectModal()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modalHeader">
-      <div style="font-weight:900">Create Project</div>
-      <button class="small" onclick="closeProjectModal()">Close</button>
-    </div>
-    <div class="modalBody">
-      <div class="grid2">
-        <div>
-          <label class="muted">Project name</label>
-          <input id="projName" placeholder="Test Trapeze" />
-        </div>
-        <div>
-          <label class="muted">Project ref</label>
-          <input id="projRef" placeholder="TT-001" />
+        <div style="flex:1">
+          <label>API Base URL</label>
+          <input id="apiBase" placeholder="http://192.168.10.181:8000" />
         </div>
       </div>
       <div class="row" style="margin-top:10px">
-        <button class="primary" onclick="createProject()">Create</button>
-        <span class="muted" id="projMsg"></span>
+        <button class="btn" id="saveApiBtn">Save API</button>
+      </div>
+      <div class="muted" style="margin-top:8px">Tip: default uses this page’s hostname on port 8000.</div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:8px">Login</div>
+      <label>Email</label>
+      <input id="email" placeholder="you@company.com" />
+      <label>Password</label>
+      <input id="password" type="password" />
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="loginBtn">Login</button>
+        <button class="btn" id="logoutBtn" style="background:#415a8b">Logout</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="pill" id="authPill">Not logged in</div>
       </div>
     </div>
+
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:8px">Projects</div>
+      <label>Project</label>
+      <select id="projectSelect">
+        <option value="">Select project…</option>
+      </select>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="refreshProjectsBtn" style="background:#415a8b">Refresh</button>
+      </div>
+
+      <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px">
+        <div class="muted">Create new</div>
+        <label>Name</label>
+        <input id="projName" placeholder="e.g. Level 2 Corridor Trapeze" />
+        <label>Bracket reference</label>
+        <input id="projRef" placeholder="e.g. BKT001" />
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="createProjectBtn" style="background:#22a06b">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="Define Bracket">Define Bracket</div>
+      <div class="tab" data-tab="Add Loads">Add Loads</div>
+      <div class="tab" data-tab="Output">Output</div>
+      <div class="tab" data-tab="Debug">Debug</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div style="font-size:18px;font-weight:900" id="pageTitle">Define Bracket</div>
+        <div class="muted" id="projectMeta">No project selected</div>
+      </div>
+      <div class="pill" id="statusPill">Idle</div>
+    </div>
+
+    <div id="content" style="margin-top:12px"></div>
   </div>
 </div>
 
 <script>
-  // ---- Storage keys
-  const LS_API = "mep_api_base";
-  const LS_TOKEN = "mep_token";
+  const LS_API="mep_api_base";
+  const LS_TOKEN="mep_token";
 
-  // ---- State (single source of truth)
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   const state = {
     project: null,
     tab: "Define Bracket",
@@ -323,6 +124,12 @@
       washer_id: "GEN_PENNY_M10",
       anchor_id: "GEN_STEEL_M10",
     },
+    library: {
+      profiles: [],
+      rods: [],
+      washers: [],
+      anchors: []
+    },
     loads: {
       1: [1500],
       2: [],
@@ -330,86 +137,68 @@
     },
     lastResult: null,
     debounceTimer: null,
+    debug: {},
   };
 
-  const TABS = ["Instructions","Define Bracket","Add Loads","Output"];
-
-  // ---- Helpers
-  function setDebug(obj){ document.getElementById("debug").textContent = (typeof obj === "string") ? obj : JSON.stringify(obj,null,2); }
-  function apiBase(){ return (document.getElementById("api").value.trim() || "http://localhost:8000").replace(/\/+$/,''); }
-  function token(){ return localStorage.getItem(LS_TOKEN) || ""; }
-  function authHeader(){
-    const t = token();
-    return t ? { "Authorization":"Bearer " + t } : {};
+  function setDebug(obj){
+    state.debug = Object.assign({}, state.debug, obj);
   }
-  function isAuthed(){ return !!token(); }
+
+  function defaultApi(){
+    return `${location.protocol}//${location.hostname}:8000`;
+  }
+
+  function apiBase(){
+    return localStorage.getItem(LS_API) || defaultApi();
+  }
+
+  function token(){
+    return localStorage.getItem(LS_TOKEN) || "";
+  }
+
+  function isAuthed(){
+    return !!token();
+  }
 
   async function apiFetch(path, opts={}){
-    const url = apiBase() + path;
-    const headers = { ...(opts.headers||{}), ...authHeader() };
-    const r = await fetch(url, { ...opts, headers });
-    let body = null;
-    const ct = r.headers.get("content-type") || "";
-    if(ct.includes("application/json")) body = await r.json().catch(()=>null);
-    else body = await r.text().catch(()=>null);
-    return { r, body };
-  }
-
-  // ---- UI boot
-  function loadState(){
-	const defaultApi = `${location.protocol}//${location.hostname}:8000`;
-	const a = localStorage.getItem(LS_API) || defaultApi;
-    document.getElementById("api").value = a;
-    document.getElementById("apiBasePill").textContent = a;
-    syncAuthPill();
-    renderTabs();
-    renderTab();
-    renderSvg();
-    refreshProjects(); // will succeed only after login
-  }
-
-  function saveApi(){
-    localStorage.setItem(LS_API, apiBase());
-    document.getElementById("apiBasePill").textContent = apiBase();
-    document.getElementById("apiMsg").textContent = "Saved.";
+    const headers = opts.headers || {};
+    if(isAuthed()){
+      headers["Authorization"] = `Bearer ${token()}`;
+    }
+    const r = await fetch(apiBase()+path, Object.assign({}, opts, {headers}));
+    let body=null;
+    try{ body = await r.json(); }catch(e){ body=null; }
+    return {r, body};
   }
 
   function syncAuthPill(){
     document.getElementById("authPill").textContent = isAuthed() ? "Logged in" : "Not logged in";
   }
 
-  // ---- Auth
-  async function register(){
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const { r, body } = await apiFetch("/auth/register",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({email,password})
-    });
-    document.getElementById("authMsg").textContent = r.ok ? "Registered." : (body?.detail || "Error");
-    setDebug(body || {status:r.status});
+  function setStatus(text){
+    document.getElementById("statusPill").textContent = text;
   }
 
   async function login(){
+    setStatus("Logging in…");
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const url = apiBase()+"/auth/login";
-    const r = await fetch(url,{
+    const {r, body} = await apiFetch("/auth/login", {
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({email,password})
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({email, password})
     });
-    const body = await r.json().catch(()=>({}));
-    if(r.ok){
-      localStorage.setItem(LS_TOKEN, body.access_token);
-      document.getElementById("authMsg").textContent = "Logged in.";
-      syncAuthPill();
-      await refreshProjects();
-    } else {
-      document.getElementById("authMsg").textContent = body.detail || "Error";
+    if(!r.ok){
+      alert(body?.detail || "Login failed");
+      setStatus("Idle");
+      return;
     }
-    setDebug(body);
+    localStorage.setItem(LS_TOKEN, body.access_token);
+    syncAuthPill();
+    await refreshProjects();
+    await loadLibrary();
+    render();
+    setStatus("Idle");
   }
 
   function logout(){
@@ -417,537 +206,400 @@
     state.project = null;
     state.lastResult = null;
     syncAuthPill();
-    document.getElementById("projectSelect").innerHTML = '<option value="">Select project…</option>';
-    document.getElementById("wsProjectTitle").textContent = "No project selected";
-    document.getElementById("wsProjectSub").textContent = "";
-    renderResult(null);
-    setDebug("Logged out.");
+    render();
   }
 
-  // ---- Projects
   async function refreshProjects(){
-    if(!isAuthed()){
-      document.getElementById("wsWarn").textContent = "Login to load projects.";
-      return;
-    }
-    document.getElementById("wsWarn").textContent = "";
-    const { r, body } = await apiFetch("/projects");
+    if(!isAuthed()) return;
+    const {r, body} = await apiFetch("/projects");
     if(!r.ok){
-      setDebug(body || {status:r.status});
-      document.getElementById("wsWarn").textContent = "Could not load projects. Check API base URL and token.";
+      alert(body?.detail || "Failed to load projects");
       return;
     }
-
+    const items = Array.isArray(body) ? body : (body?.items || []);
     const sel = document.getElementById("projectSelect");
     const cur = sel.value;
     sel.innerHTML = '<option value="">Select project…</option>';
-    (body||[]).forEach(p=>{
+    items.forEach(p=>{
       const opt = document.createElement("option");
       opt.value = p.id;
-      opt.textContent = `${p.project_ref || "—"} · ${p.name}`;
+      const ref = p.bracket_reference || p.project_ref || "—";
+      const name = p.name || p.id;
+      opt.textContent = `${ref} · ${name}`;
       sel.appendChild(opt);
     });
     if(cur) sel.value = cur;
-    setDebug({projects:(body||[]).length});
+    setDebug({projects: items.length});
   }
-
-  async function onSelectProject(){
-    const id = document.getElementById("projectSelect").value;
-    if(!id){ state.project=null; renderProjectHeader(); return; }
-    const { r, body } = await apiFetch("/projects/"+id);
-    if(!r.ok){ setDebug(body || {status:r.status}); return; }
-    state.project = body;
-    renderProjectHeader();
-    state.lastResult = null;
-    renderResult(null);
-
-    // NGB-like: run an initial check as soon as a project is selected
-    debounceCheck();
-    setDebug(body);
-  }
-
-  function renderProjectHeader(){
-    if(!state.project){
-      document.getElementById("wsProjectTitle").textContent = "No project selected";
-      document.getElementById("wsProjectSub").textContent = "";
-      return;
-    }
-    document.getElementById("wsProjectTitle").textContent = state.project.name;
-    document.getElementById("wsProjectSub").textContent = `Ref: ${state.project.project_ref} · ID: ${state.project.id}`;
-  }
-
-  // ---- New project modal
-  function openProjectModal(){ document.getElementById("projBack").style.display="flex"; }
-  function closeProjectModal(){ document.getElementById("projBack").style.display="none"; }
 
   async function createProject(){
+    if(!isAuthed()){ alert("Login first"); return; }
     const name = document.getElementById("projName").value.trim() || "Untitled";
-    const project_ref = document.getElementById("projRef").value.trim() || "PRJ-001";
-    const { r, body } = await apiFetch("/projects",{
+    const bracket_reference = document.getElementById("projRef").value.trim() || "BKT001";
+    const {r, body} = await apiFetch("/projects", {
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ name, project_ref })
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name, bracket_reference})
     });
-    document.getElementById("projMsg").textContent = r.ok ? "Created." : (body?.detail || "Error");
-    setDebug(body || {status:r.status});
-    if(r.ok){
-      await refreshProjects();
-      closeProjectModal();
-      // auto-select
-      const sel = document.getElementById("projectSelect");
-      sel.value = body.id;
-      await onSelectProject();
-    }
-  }
-
-  // ---- CSV upload
-  async function uploadCsv(){
-    const f = document.getElementById("csvFile").files[0];
-    const typ = document.getElementById("csvType").value;
-    if(!f) return;
-    const fd = new FormData(); fd.append("file", f);
-    const { r, body } = await apiFetch("/library/import/"+typ,{ method:"POST", body: fd });
-    document.getElementById("csvMsg").textContent = r.ok ? `Imported ${body.inserted}/${body.rows}` : (body?.detail || "Error");
-    setDebug(body || {status:r.status});
-  }
-
-  // ---- Tabs + tab render
-  function renderTabs(){
-    const wrap = document.getElementById("tabs");
-    wrap.innerHTML = "";
-    TABS.forEach(t=>{
-      const b = document.createElement("div");
-      b.className = "tab" + (t===state.tab ? " active" : "");
-      b.textContent = t;
-      b.onclick = ()=>{ state.tab=t; renderTabs(); renderTab(); };
-      wrap.appendChild(b);
-    });
-  }
-
-  function renderTab(){
-    const el = document.getElementById("tabContent");
-    if(state.tab==="Instructions"){
-      el.innerHTML = `
-        <div class="muted">Trapeze bracket tool (v1).</div>
-        <div class="hr"></div>
-        <div class="muted">Use <b>Define Bracket</b> and <b>Add Loads</b> on the left.</div>
-        <div class="muted">The drawing and results update automatically as you change values.</div>
-        <div class="hr"></div>
-        <div class="muted">Tip: select a project first (top bar).</div>
-      `;
+    if(!r.ok){
+      alert(body?.detail || "Failed to create project");
       return;
     }
+    await refreshProjects();
+    document.getElementById("projectSelect").value = body.id;
+    await selectProject(body.id);
+  }
 
-    if(state.tab==="Define Bracket"){
-      el.innerHTML = `
-        <div style="font-weight:900; margin-bottom:8px">Define Bracket</div>
-
-        <label class="muted">Bracket Ref</label>
-        <input id="bracket_ref" value="${escapeHtml(state.bracket.bracket_ref)}" />
-
-        <div style="height:10px"></div>
-
-        <div class="miniGrid">
-          <div>
-            <label class="muted">Span (mm)</label>
-            <input id="span_mm" type="number" min="200" max="4000" value="${state.bracket.span_mm}" />
-          </div>
-          <div>
-            <label class="muted">Tiers (1–3)</label>
-            <input id="tier_count" type="number" min="1" max="3" value="${state.bracket.tier_count}" />
-          </div>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div class="miniGrid">
-          <div>
-            <label class="muted">Profile ID</label>
-            <input id="profile_id" value="${escapeHtml(state.bracket.profile_id)}" />
-          </div>
-          <div>
-            <label class="muted">Rod ID</label>
-            <input id="rod_id" value="${escapeHtml(state.bracket.rod_id)}" />
-          </div>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div class="miniGrid">
-          <div>
-            <label class="muted">Washer ID</label>
-            <input id="washer_id" value="${escapeHtml(state.bracket.washer_id)}" />
-          </div>
-          <div>
-            <label class="muted">Anchor ID</label>
-            <input id="anchor_id" value="${escapeHtml(state.bracket.anchor_id)}" />
-          </div>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <label class="muted">Fire condition</label>
-        <select id="fire_condition">
-          <option value="false" ${state.bracket.fire_condition ? "" : "selected"}>false</option>
-          <option value="true" ${state.bracket.fire_condition ? "selected" : ""}>true</option>
-        </select>
-
-        <div class="hr"></div>
-        <div class="muted">Changes trigger a live redraw and a debounced check (when project selected).</div>
-      `;
-
-      wireDefineInputs();
+  async function selectProject(id){
+    if(!id){
+      state.project = null;
+      state.lastResult = null;
+      render();
       return;
     }
+    state.project = {id};
+    setStatus("Loading…");
+    const {r, body} = await apiFetch(`/projects/${id}`);
+    if(r.ok && body){
+      // Backend returns snapshot JSON; merge into bracket/loads if present
+      // (Snapshot schema can vary; be defensive)
+      state.bracket = Object.assign({}, state.bracket, body);
+      if(body.loads) state.loads = body.loads;
+    }
+    setStatus("Idle");
+    render();
+    scheduleCheck();
+  }
 
-    if(state.tab==="Add Loads"){
-      el.innerHTML = `
-        <div style="font-weight:900; margin-bottom:8px">Tier Loads (N)</div>
-        <div class="muted">Add one or more loads per tier. Total per tier is summed.</div>
-        <div class="hr"></div>
-        <div id="loadsEditor"></div>
-      `;
-      renderLoadsEditor();
-      return;
+  async function loadLibrary(){
+    if(!isAuthed()) return;
+
+    async function load(kind){
+      const {r, body} = await apiFetch(`/library/${kind}`);
+      if(!r.ok) return [];
+      return body?.items || [];
     }
 
-    // Output
-    el.innerHTML = `
-      <div style="font-weight:900; margin-bottom:8px">Output</div>
-      <div class="muted">Use <b>Run check</b> or just edit inputs to update results.</div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <button class="primary" onclick="runCheckNow()">Run check</button>
-        <button onclick="openResults()">Results</button>
-        <button onclick="downloadPdf()">Print PDF</button>
-      </div>
-    `;
+    state.library.profiles = await load("profiles");
+    state.library.rods     = await load("rods");
+    state.library.washers  = await load("washers");
+    state.library.anchors  = await load("anchors");
   }
 
-  function wireDefineInputs(){
-    const map = [
-      ["bracket_ref","bracket_ref", v=>String(v||"")],
-      ["span_mm","span_mm", v=>clampInt(v,200,4000,1200)],
-      ["tier_count","tier_count", v=>clampInt(v,1,3,1)],
-      ["profile_id","profile_id", v=>String(v||"")],
-      ["rod_id","rod_id", v=>String(v||"")],
-      ["washer_id","washer_id", v=>String(v||"")],
-      ["anchor_id","anchor_id", v=>String(v||"")],
-      ["fire_condition","fire_condition", v=>(String(v)==="true")]
-    ];
-
-    map.forEach(([id, key, fn])=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.addEventListener("input", ()=>{
-        state.bracket[key] = fn(el.value);
-        // if tiers changed, normalise loads arrays
-        if(key==="tier_count") normaliseTiers();
-        renderSvg();
-        debounceCheck();
-      });
-      el.addEventListener("change", ()=>{
-        state.bracket[key] = fn(el.value);
-        if(key==="tier_count") normaliseTiers();
-        renderSvg();
-        debounceCheck();
-      });
-    });
+  function optionsFrom(items, valueKey, labelFn, selected){
+    const opts = (items || []).map(it=>{
+      const v = String(it[valueKey] ?? "");
+      const label = labelFn(it);
+      const sel = (v === String(selected)) ? "selected" : "";
+      return `<option value="${escapeHtml(v)}" ${sel}>${escapeHtml(label)}</option>`;
+    }).join("");
+    return `<option value="">Select…</option>` + opts;
   }
 
-  function normaliseTiers(){
-    const n = state.bracket.tier_count;
-    for(let t=1;t<=3;t++){
-      if(t<=n){
-        if(!Array.isArray(state.loads[t])) state.loads[t]=[];
-        if(state.loads[t].length===0) state.loads[t]=[1500]; // sensible default
-      } else {
-        state.loads[t]=[];
-      }
-    }
-    if(state.tab==="Add Loads") renderLoadsEditor();
-  }
-
-  function renderLoadsEditor(){
-    const wrap = document.getElementById("loadsEditor");
-    if(!wrap) return;
-    wrap.innerHTML = "";
-
-    const n = state.bracket.tier_count;
-    for(let t=1;t<=n;t++){
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.background = "rgba(0,0,0,.10)";
-      card.style.marginBottom = "10px";
-
-      const total = (state.loads[t]||[]).reduce((a,b)=>a+(Number(b)||0),0);
-
-      card.innerHTML = `
-        <div class="row" style="justify-content:space-between">
-          <div style="font-weight:900">Tier ${t}</div>
-          <div class="muted">Total: <b>${total.toFixed(0)} N</b></div>
-        </div>
-        <div style="height:8px"></div>
-        <div id="tier_${t}_rows"></div>
-        <div class="row" style="margin-top:8px">
-          <button class="small" onclick="addLoad(${t})">+ Add load</button>
-          <button class="small" onclick="clearLoads(${t})">Clear</button>
-        </div>
-      `;
-
-      wrap.appendChild(card);
-
-      const rows = card.querySelector(`#tier_${t}_rows`);
-      (state.loads[t]||[]).forEach((val, idx)=>{
-        const r = document.createElement("div");
-        r.className = "loadRow";
-        r.innerHTML = `
-          <input type="number" min="0" step="1" value="${Number(val)||0}" />
-          <button class="small" title="Remove" aria-label="Remove">✕</button>
-        `;
-        const inp = r.querySelector("input");
-        const btn = r.querySelector("button");
-        inp.addEventListener("input", ()=>{
-          state.loads[t][idx] = Number(inp.value)||0;
-          renderSvg();
-          debounceCheck();
-          // update tier totals without full rerender: easiest is rerender editor
-          renderLoadsEditor();
-        });
-        btn.addEventListener("click", ()=>{
-          state.loads[t].splice(idx,1);
-          if(state.loads[t].length===0) state.loads[t]=[0];
-          renderSvg();
-          debounceCheck();
-          renderLoadsEditor();
-        });
-        rows.appendChild(r);
-      });
-    }
-
-    renderSvg();
-    debounceCheck();
-  }
-
-  function addLoad(t){
-    state.loads[t] = state.loads[t] || [];
-    state.loads[t].push(0);
-    renderLoadsEditor();
-  }
-  function clearLoads(t){
-    state.loads[t] = [0];
-    renderLoadsEditor();
-  }
-
-  // ---- SVG render (live drawing)
-  function renderSvg(){
-    const svg = document.getElementById("bracketSvg");
-    if(!svg) return;
-
-    const span = state.bracket.span_mm;
-    const tiers = state.bracket.tier_count;
-
-    // simple scale: map span to drawing width
-    const left = 180, right = 820;
-    const rodX1 = 280, rodX2 = 720;
-    const topY = 120, bottomY = 460;
-
-    svg.innerHTML = `
-      <defs>
-        <style>
-          .line{ stroke:rgba(255,255,255,.7); stroke-width:5; }
-          .thin{ stroke:rgba(255,255,255,.35); stroke-width:2; }
-          .txt{ fill:rgba(255,255,255,.92); font: 18px system-ui; font-weight:900; }
-          .mut{ fill:rgba(255,255,255,.55); font: 14px system-ui; }
-          .pill{ fill:rgba(37,99,235,.18); stroke:rgba(37,99,235,.6); stroke-width:1; }
-        </style>
-      </defs>
-
-      <text x="20" y="34" class="txt">Trapeze Bracket (live)</text>
-      <text x="20" y="58" class="mut">Span: ${span} mm · Tiers: ${tiers} · Ref: ${escapeXml(state.bracket.bracket_ref)}</text>
-
-      <!-- rods -->
-      <line x1="${rodX1}" y1="${topY}" x2="${rodX1}" y2="${bottomY}" class="thin"/>
-      <line x1="${rodX2}" y1="${topY}" x2="${rodX2}" y2="${bottomY}" class="thin"/>
-
-      <text x="${rodX1-18}" y="${topY-10}" class="mut">${escapeXml(state.bracket.rod_id)}</text>
-      <text x="${rodX2-18}" y="${topY-10}" class="mut">${escapeXml(state.bracket.rod_id)}</text>
-
-      <!-- span dim -->
-      <line x1="${left}" y1="${topY+10}" x2="${right}" y2="${topY+10}" class="thin"/>
-      <line x1="${left}" y1="${topY+4}" x2="${left}" y2="${topY+16}" class="thin"/>
-      <line x1="${right}" y1="${topY+4}" x2="${right}" y2="${topY+16}" class="thin"/>
-      <text x="${(left+right)/2 - 40}" y="${topY+38}" class="mut">${span} mm</text>
-    `;
-
-    // tier y positions (bottom-up like NGB)
-    const tierYs = [];
-    if(tiers===1) tierYs.push(380);
-    if(tiers===2) tierYs.push(360, 260);
-    if(tiers===3) tierYs.push(420, 300, 180);
-
-    tierYs.slice(0,tiers).forEach((y, idx)=>{
-      const tier = tiers - idx; // label as Tier 1 at bottom
-      const total = (state.loads[tier]||[]).reduce((a,b)=>a+(Number(b)||0),0);
-      svg.innerHTML += `
-        <line x1="${rodX1-120}" y1="${y}" x2="${rodX2+120}" y2="${y}" class="line"/>
-        <text x="${rodX2+135}" y="${y+6}" class="mut">Tier ${tier}</text>
-        <rect x="20" y="${y-18}" width="210" height="28" rx="10" class="pill"></rect>
-        <text x="30" y="${y+2}" class="mut">Tier ${tier} load: <tspan class="txt" style="font-size:14px">${total.toFixed(0)} N</tspan></text>
-      `;
-    });
-  }
-
-  // ---- Check / results (debounced like desktop tool)
-  function debounceCheck(){
-    if(!state.project) return;
+  function scheduleCheck(){
+    if(!state.project?.id) return;
     clearTimeout(state.debounceTimer);
-    state.debounceTimer = setTimeout(()=>runCheckInternal(false), 500);
+    state.debounceTimer = setTimeout(runCheck, 350);
   }
 
-  async function runCheckNow(){
-    await runCheckInternal(true);
-  }
+  async function runCheck(){
+    if(!state.project?.id) return;
+    setStatus("Checking…");
 
-  function buildTierLoadsArray(){
-    const n = state.bracket.tier_count;
-    const out = [];
-    for(let t=1;t<=n;t++){
-      const total = (state.loads[t]||[]).reduce((a,b)=>a+(Number(b)||0),0);
-      out.push(total);
+    // Build a snapshot payload for the backend by updating project snapshot first
+    // Your current backend uses stored snapshot, not request body, so we update it via "create project snapshot" pattern later.
+    // For now we call /check which uses stored snapshot; this UI mainly proves dropdown wiring + future-ready.
+    const {r, body} = await apiFetch(`/projects/${state.project.id}/check`, {method:"POST"});
+    if(!r.ok){
+      setStatus("Idle");
+      state.lastResult = {error: body?.detail || "Check failed"};
+      render();
+      return;
     }
-    return out;
+    state.lastResult = body;
+    setStatus(body.status || "OK");
+    render();
   }
 
-  async function runCheckInternal(showModalOnSuccess){
-    if(!state.project){
-      document.getElementById("wsMsg").textContent = "Select a project first.";
+  function drawSvg(){
+    const span = Number(state.bracket.span_mm || 1200);
+    const tiers = Number(state.bracket.tier_count || 1);
+    const w = 900, h = 280;
+    const pad = 60;
+    const x1 = pad, x2 = w - pad;
+    const y0 = 70;
+    const tierGap = 55;
+
+    const tierYs = [];
+    for(let i=0;i<tiers;i++){
+      tierYs.push(y0 + i*tierGap);
+    }
+
+    const loads = state.loads;
+    function tierLoad(i){
+      const arr = loads[i] || [];
+      return arr.reduce((a,b)=>a+Number(b||0),0);
+    }
+
+    const lines = tierYs.map((y, idx) => {
+      const t = idx+1;
+      const L = tierLoad(t);
+      return `
+        <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="rgba(255,255,255,.9)" stroke-width="5" />
+        <text x="${x2+10}" y="${y+5}" fill="rgba(255,255,255,.9)" font-size="14">Tier ${t}: ${L} N</text>
+      `;
+    }).join("");
+
+    return `
+      <svg viewBox="0 0 ${w} ${h}">
+        <text x="${pad}" y="28" fill="rgba(255,255,255,.9)" font-size="16" font-weight="700">
+          Span: ${span} mm · Tiers: ${tiers}
+        </text>
+        <line x1="${x1}" y1="${y0-40}" x2="${x1}" y2="${tierYs[tierYs.length-1]+40}" stroke="rgba(255,255,255,.4)" stroke-width="6"/>
+        <line x1="${x2}" y1="${y0-40}" x2="${x2}" y2="${tierYs[tierYs.length-1]+40}" stroke="rgba(255,255,255,.4)" stroke-width="6"/>
+        ${lines}
+      </svg>
+    `;
+  }
+
+  function render(){
+    document.getElementById("pageTitle").textContent = state.tab;
+    if(state.project?.id){
+      document.getElementById("projectMeta").textContent = `Project: ${state.project.id}`;
+    } else {
+      document.getElementById("projectMeta").textContent = `No project selected`;
+    }
+
+    document.querySelectorAll(".tab").forEach(el=>{
+      el.classList.toggle("active", el.dataset.tab === state.tab);
+    });
+
+    const c = document.getElementById("content");
+
+    if(state.tab === "Define Bracket"){
+      c.innerHTML = `
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Define Bracket</div>
+
+          <div class="row">
+            <div style="flex:1">
+              <label>Bracket Ref</label>
+              <input id="bracket_ref" value="${escapeHtml(state.bracket.bracket_ref)}" />
+            </div>
+            <div style="flex:1">
+              <label>Span (mm)</label>
+              <input id="span_mm" type="number" value="${escapeHtml(state.bracket.span_mm)}" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="flex:1">
+              <label>Tier Count</label>
+              <select id="tier_count">
+                <option value="1" ${state.bracket.tier_count==1?"selected":""}>1</option>
+                <option value="2" ${state.bracket.tier_count==2?"selected":""}>2</option>
+                <option value="3" ${state.bracket.tier_count==3?"selected":""}>3</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <label>Fire Condition</label>
+              <select id="fire_condition">
+                <option value="false" ${!state.bracket.fire_condition?"selected":""}>No</option>
+                <option value="true" ${state.bracket.fire_condition?"selected":""}>Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <label>Profile</label>
+          <select id="profile_id">
+            ${optionsFrom(
+              state.library.profiles,
+              "profile_id",
+              p => `${p.profile_id} · ${p.profile_name} (${p.width_mm}x${p.height_mm}x${p.thickness_mm})`,
+              state.bracket.profile_id
+            )}
+          </select>
+
+          <label>Rod</label>
+          <select id="rod_id">
+            ${optionsFrom(
+              state.library.rods,
+              "rod_id",
+              r => `${r.rod_id} · ${r.rod_name || r.thread || "Rod"}`,
+              state.bracket.rod_id
+            )}
+          </select>
+
+          <label>Washer</label>
+          <select id="washer_id">
+            ${optionsFrom(
+              state.library.washers,
+              "washer_id",
+              w => `${w.washer_id} · ${w.washer_name} (x${w.bearing_area_multiplier || 1})`,
+              state.bracket.washer_id
+            )}
+          </select>
+
+          <label>Anchor</label>
+          <select id="anchor_id">
+            ${optionsFrom(
+              state.library.anchors,
+              "anchor_id",
+              a => `${a.anchor_id} · ${a.anchor_name || a.base_material || "Anchor"}`,
+              state.bracket.anchor_id
+            )}
+          </select>
+
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="toLoadsBtn" style="background:#415a8b">Next: Add Loads</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Preview</div>
+          ${drawSvg()}
+          <div class="muted" style="margin-top:8px">Live drawing updates as you change tier count/span.</div>
+        </div>
+      `;
+
+      wireDefine();
       return;
     }
 
-    const payload = {
-      bracket_ref: state.bracket.bracket_ref,
-      span_mm: state.bracket.span_mm,
-      tier_count: state.bracket.tier_count,
-      tier_loads_N: buildTierLoadsArray(),
-      profile_id: state.bracket.profile_id,
-      rod_id: state.bracket.rod_id,
-      washer_id: state.bracket.washer_id,
-      anchor_id: state.bracket.anchor_id,
-      fire_condition: !!state.bracket.fire_condition
+    if(state.tab === "Add Loads"){
+      const tiers = Number(state.bracket.tier_count || 1);
+      let html = `
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Add Loads (N)</div>
+          <div class="muted">Enter one or more loads per tier (N). This is placeholder until duct/pipe weights are integrated.</div>
+      `;
+
+      for(let t=1;t<=tiers;t++){
+        const arr = state.loads[t] || [];
+        html += `
+          <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">
+            <div style="font-weight:800">Tier ${t}</div>
+            <div class="row" style="margin-top:8px;align-items:flex-end">
+              <div style="flex:1">
+                <label>Loads (comma separated)</label>
+                <input id="tier_${t}" value="${escapeHtml(arr.join(","))}" />
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `
+          <div class="row" style="margin-top:12px">
+            <button class="btn" id="runCheckBtn">Run Check</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Preview</div>
+          ${drawSvg()}
+        </div>
+      `;
+
+      c.innerHTML = html;
+      wireLoads();
+      return;
+    }
+
+    if(state.tab === "Output"){
+      c.innerHTML = `
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Result</div>
+          <pre>${escapeHtml(JSON.stringify(state.lastResult || {info:"Run a check to see results"}, null, 2))}</pre>
+          <div class="muted">PDF output wiring comes next (after check engine is non-placeholder).</div>
+        </div>
+      `;
+      return;
+    }
+
+    if(state.tab === "Debug"){
+      c.innerHTML = `
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:10px">Debug</div>
+          <div class="muted">API Base: ${escapeHtml(apiBase())}</div>
+          <div class="muted">Authed: ${isAuthed() ? "yes" : "no"}</div>
+          <pre>${escapeHtml(JSON.stringify(state.debug, null, 2))}</pre>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  function wireDefine(){
+    const el = (id) => document.getElementById(id);
+
+    el("toLoadsBtn").onclick = ()=>{ state.tab="Add Loads"; render(); };
+
+    const bind = (id, fn) => {
+      el(id).addEventListener("input", ()=>{ fn(el(id).value); render(); scheduleCheck(); });
+      el(id).addEventListener("change", ()=>{ fn(el(id).value); render(); scheduleCheck(); });
     };
 
-    document.getElementById("wsMsg").textContent = "Checking…";
+    bind("bracket_ref", v => state.bracket.bracket_ref = v);
+    bind("span_mm", v => state.bracket.span_mm = Number(v||0));
+    bind("tier_count", v => state.bracket.tier_count = Number(v||1));
+    bind("fire_condition", v => state.bracket.fire_condition = (String(v) === "true"));
 
-    const { r, body } = await apiFetch(`/projects/${state.project.id}/check`,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
+    bind("profile_id", v => state.bracket.profile_id = String(v||""));
+    bind("rod_id", v => state.bracket.rod_id = String(v||""));
+    bind("washer_id", v => state.bracket.washer_id = String(v||""));
+    bind("anchor_id", v => state.bracket.anchor_id = String(v||""));
+  }
+
+  function wireLoads(){
+    const tiers = Number(state.bracket.tier_count || 1);
+    for(let t=1;t<=tiers;t++){
+      const inp = document.getElementById(`tier_${t}`);
+      inp.addEventListener("input", ()=>{
+        const parts = inp.value.split(",").map(s=>s.trim()).filter(Boolean).map(x=>Number(x));
+        state.loads[t] = parts.filter(n=>Number.isFinite(n));
+        render();
+        scheduleCheck();
+      });
+    }
+    document.getElementById("runCheckBtn").onclick = ()=>runCheck();
+  }
+
+  // ---- Side UI wiring ----
+  document.getElementById("apiBase").value = apiBase();
+  document.getElementById("saveApiBtn").onclick = ()=>{
+    const v = document.getElementById("apiBase").value.trim() || defaultApi();
+    localStorage.setItem(LS_API, v);
+    alert("Saved API Base: " + v);
+  };
+
+  document.getElementById("loginBtn").onclick = login;
+  document.getElementById("logoutBtn").onclick = logout;
+  document.getElementById("refreshProjectsBtn").onclick = refreshProjects;
+  document.getElementById("createProjectBtn").onclick = createProject;
+
+  document.getElementById("projectSelect").addEventListener("change", (e)=>{
+    selectProject(e.target.value);
+  });
+
+  document.querySelectorAll(".tab").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      state.tab = el.dataset.tab;
+      render();
     });
+  });
 
-    if(!r.ok){
-      document.getElementById("wsMsg").textContent = body?.detail || "Check error";
-      setDebug(body || {status:r.status});
-      return;
+  // ---- init ----
+  syncAuthPill();
+  // auto-load if already authed
+  (async ()=>{
+    if(isAuthed()){
+      await refreshProjects();
+      await loadLibrary();
     }
+    render();
+  })();
 
-    state.lastResult = body;
-    renderResult(body);
-    document.getElementById("wsMsg").textContent = "Updated.";
-
-    if(showModalOnSuccess) showModal(body);
-  }
-
-  function renderResult(res){
-    const statusEl = document.getElementById("kpiStatus");
-    const totalEl = document.getElementById("kpiTotal");
-    const govEl = document.getElementById("kpiGov");
-    const notesWrap = document.getElementById("notes");
-
-    if(!res){
-      statusEl.textContent = "—";
-      statusEl.className = "badge";
-      totalEl.textContent = "0.0";
-      govEl.textContent = "—";
-      notesWrap.innerHTML = "";
-      return;
-    }
-
-    statusEl.textContent = res.status || "—";
-    statusEl.className = "badge " + ((res.status==="PASS") ? "pass" : (res.status==="FAIL" ? "fail" : ""));
-    totalEl.textContent = String(res.total_weight_kg ?? "0.0");
-    govEl.textContent = res.governing_check || "—";
-
-    notesWrap.innerHTML = "";
-    (res.notes||[]).forEach(n=>{
-      const d = document.createElement("div");
-      d.className = "noteLine muted";
-      d.textContent = "• " + n;
-      notesWrap.appendChild(d);
-    });
-
-    setDebug(res);
-  }
-
-  // ---- Results modal
-  function showModal(obj){
-    document.getElementById("modalPre").textContent = JSON.stringify(obj,null,2);
-    document.getElementById("modalBack").style.display = "flex";
-  }
-  function hideModal(){ document.getElementById("modalBack").style.display = "none"; }
-  function openResults(){
-    if(!state.lastResult){
-      showModal({info:"No results yet. Select a project and edit inputs to run a check."});
-      return;
-    }
-    showModal(state.lastResult);
-  }
-
-  // ---- PDF download (needs Authorization header)
-  async function downloadPdf(){
-    if(!state.project){
-      document.getElementById("wsMsg").textContent = "Select a project first.";
-      return;
-    }
-    if(!isAuthed()){
-      document.getElementById("wsMsg").textContent = "Login first.";
-      return;
-    }
-
-    document.getElementById("wsMsg").textContent = "Generating PDF…";
-
-    const url = apiBase() + `/projects/${state.project.id}/pdf`;
-    const r = await fetch(url, { headers: authHeader() });
-    if(!r.ok){
-      const t = await r.text().catch(()=> "");
-      document.getElementById("wsMsg").textContent = "PDF error";
-      setDebug({status:r.status, body:t});
-      return;
-    }
-    const blob = await r.blob();
-    const a = document.createElement("a");
-    const stamp = new Date().toISOString().replace(/[:.]/g,"-");
-    a.href = URL.createObjectURL(blob);
-    a.download = `${(state.project.project_ref||"project")}_${state.bracket.bracket_ref}_${stamp}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    document.getElementById("wsMsg").textContent = "PDF downloaded.";
-  }
-
-  // ---- Small utils
-  function clampInt(v,min,max,def){
-    const n = parseInt(String(v||""),10);
-    if(Number.isNaN(n)) return def;
-    return Math.max(min, Math.min(max, n));
-  }
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-  function escapeXml(s){ return escapeHtml(s); }
-
-  // ---- Start
-  loadState();
 </script>
 </body>
 </html>
