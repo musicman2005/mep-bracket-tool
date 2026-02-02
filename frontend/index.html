@@ -1,58 +1,62 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MEP Bracket Tool</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MEP Bracket Tool v3</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0b1220;color:#e6eefc}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0b1220;color:#e6eefc}
     .wrap{display:flex;min-height:100vh}
-    .side{width:280px;background:#0f1a33;border-right:1px solid rgba(255,255,255,.08);padding:14px;box-sizing:border-box}
+    .side{width:320px;background:#0f1a33;border-right:1px solid rgba(255,255,255,.08);padding:14px;box-sizing:border-box}
     .main{flex:1;padding:16px;box-sizing:border-box}
-    .card{background:#101c3a;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:12px}
+    .card{background:#101c3a;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin-bottom:12px}
     .row{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:#2a6df5;border:none;color:white;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn{background:#2a6df5;border:none;color:white;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:800}
+    .btn.secondary{background:#415a8b}
+    .btn.good{background:#22a06b}
+    .btn.bad{background:#b24a4a}
     input,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0b1734;color:#e6eefc}
     label{display:block;font-size:12px;opacity:.85;margin:8px 0 6px}
     .muted{opacity:.75;font-size:12px}
     .tabs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-    .tab{padding:10px 10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:#0b1734}
+    .tab{padding:10px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:#0b1734}
     .tab.active{background:#152a5a;border-color:rgba(255,255,255,.18)}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .pill{font-size:12px;padding:6px 10px;border-radius:999px;background:#0b1734;border:1px solid rgba(255,255,255,.10)}
     pre{white-space:pre-wrap;background:#08122a;border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:10px}
-    svg{width:100%;height:auto;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#0b1734}
+    svg{width:100%;height:auto;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#0b1734}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .tbl{width:100%;border-collapse:collapse}
+    .tbl td,.tbl th{border-bottom:1px solid rgba(255,255,255,.08);padding:8px;font-size:13px;vertical-align:top}
+    .tag{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:12px;opacity:.9}
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="side">
-    <div style="font-weight:900;font-size:16px">MEP Bracket Tool</div>
-    <div class="muted">Trapeze (v2 UI) – library dropdowns enabled</div>
+    <div style="font-weight:950;font-size:16px">MEP Bracket Tool</div>
+    <div class="muted">v3 UI – NGB-style loads + live check</div>
 
     <div class="card" style="margin-top:12px">
-      <div class="row">
-        <div style="flex:1">
-          <label>API Base URL</label>
-          <input id="apiBase" placeholder="http://192.168.10.181:8000" />
-        </div>
-      </div>
+      <div style="font-weight:850;margin-bottom:8px">Connection</div>
+      <label>API Base URL</label>
+      <input id="apiBase" placeholder="http://192.168.10.181:8000"/>
       <div class="row" style="margin-top:10px">
-        <button class="btn" id="saveApiBtn">Save API</button>
+        <button class="btn secondary" id="saveApiBtn">Save</button>
       </div>
-      <div class="muted" style="margin-top:8px">Tip: default uses this page’s hostname on port 8000.</div>
+      <div class="muted" style="margin-top:6px">Default is this host on :8000</div>
     </div>
 
     <div class="card">
-      <div style="font-weight:800;margin-bottom:8px">Login</div>
+      <div style="font-weight:850;margin-bottom:8px">Login</div>
       <label>Email</label>
-      <input id="email" placeholder="you@company.com" />
+      <input id="email" placeholder="you@company.com"/>
       <label>Password</label>
-      <input id="password" type="password" />
+      <input id="password" type="password"/>
       <div class="row" style="margin-top:10px">
         <button class="btn" id="loginBtn">Login</button>
-        <button class="btn" id="logoutBtn" style="background:#415a8b">Logout</button>
+        <button class="btn secondary" id="logoutBtn">Logout</button>
       </div>
       <div class="row" style="margin-top:10px">
         <div class="pill" id="authPill">Not logged in</div>
@@ -60,24 +64,21 @@
     </div>
 
     <div class="card">
-      <div style="font-weight:800;margin-bottom:8px">Projects</div>
+      <div style="font-weight:850;margin-bottom:8px">Projects</div>
       <label>Project</label>
-      <select id="projectSelect">
-        <option value="">Select project…</option>
-      </select>
-
+      <select id="projectSelect"><option value="">Select…</option></select>
       <div class="row" style="margin-top:10px">
-        <button class="btn" id="refreshProjectsBtn" style="background:#415a8b">Refresh</button>
+        <button class="btn secondary" id="refreshProjectsBtn">Refresh</button>
       </div>
 
       <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px">
-        <div class="muted">Create new</div>
+        <div class="muted">Create</div>
         <label>Name</label>
-        <input id="projName" placeholder="e.g. Level 2 Corridor Trapeze" />
+        <input id="projName" placeholder="e.g. L2 Corridor Trapeze"/>
         <label>Bracket reference</label>
-        <input id="projRef" placeholder="e.g. BKT001" />
+        <input id="projRef" placeholder="e.g. BKT001"/>
         <div class="row" style="margin-top:10px">
-          <button class="btn" id="createProjectBtn" style="background:#22a06b">Create</button>
+          <button class="btn good" id="createProjectBtn">Create</button>
         </div>
       </div>
     </div>
@@ -93,7 +94,7 @@
   <div class="main">
     <div class="topbar">
       <div>
-        <div style="font-size:18px;font-weight:900" id="pageTitle">Define Bracket</div>
+        <div style="font-size:18px;font-weight:950" id="pageTitle">Define Bracket</div>
         <div class="muted" id="projectMeta">No project selected</div>
       </div>
       <div class="pill" id="statusPill">Idle</div>
@@ -107,42 +108,50 @@
   const LS_API="mep_api_base";
   const LS_TOKEN="mep_token";
 
+  const G = 9.81;
+
   function escapeHtml(s){
     return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  const state = {
-    project: null,
-    tab: "Define Bracket",
-    bracket: {
-      bracket_ref: "BKT-001",
-      span_mm: 1200,
-      tier_count: 1,
-      fire_condition: false,
-      profile_id: "GEN_41x41",
-      rod_id: "GEN_M10",
-      washer_id: "GEN_PENNY_M10",
-      anchor_id: "GEN_STEEL_M10",
-    },
-    library: {
-      profiles: [],
-      rods: [],
-      washers: [],
-      anchors: []
-    },
-    loads: {
-      1: [1500],
-      2: [],
-      3: []
-    },
-    lastResult: null,
-    debounceTimer: null,
-    debug: {},
-  };
-
-  function setDebug(obj){
-    state.debug = Object.assign({}, state.debug, obj);
+  function uid(){
+    return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
   }
+
+  // --- Starter MEP library (demo values – replace with your real datasets later) ---
+  // Units:
+  // - mass_kg_per_m for linear items
+  // - pipe: we model "dry" and optional "water contents" (kg/m) for wet
+  const MEP_LIBRARY = {
+    pipe: [
+      {code:"CU_54", name:"Copper Pipe 54mm", od_mm:54, mass_kg_per_m:2.50, water_kg_per_m:1.60},
+      {code:"CU_35", name:"Copper Pipe 35mm", od_mm:35, mass_kg_per_m:1.20, water_kg_per_m:0.70},
+      {code:"STEEL_88.9", name:"Steel Pipe 88.9mm", od_mm:88.9, mass_kg_per_m:9.50, water_kg_per_m:4.90},
+    ],
+    duct: [
+      {code:"GI_300x200", name:"Duct 300x200", w_mm:300, h_mm:200, mass_kg_per_m:6.0},
+      {code:"GI_600x300", name:"Duct 600x300", w_mm:600, h_mm:300, mass_kg_per_m:12.0},
+    ],
+    tray: [
+      {code:"TRAY_300", name:"Cable Tray 300", w_mm:300, mass_kg_per_m:3.0},
+      {code:"TRAY_450", name:"Cable Tray 450", w_mm:450, mass_kg_per_m:4.2},
+    ],
+    ladder: [
+      {code:"LADDER_300", name:"Cable Ladder 300", w_mm:300, mass_kg_per_m:6.5},
+      {code:"LADDER_450", name:"Cable Ladder 450", w_mm:450, mass_kg_per_m:8.2},
+    ],
+    basket: [
+      {code:"BASKET_300", name:"Basket 300", w_mm:300, mass_kg_per_m:2.4},
+      {code:"BASKET_450", name:"Basket 450", w_mm:450, mass_kg_per_m:3.2},
+    ],
+    trunking: [
+      {code:"TRUNK_150x150", name:"Trunking 150x150", w_mm:150, h_mm:150, mass_kg_per_m:4.0},
+    ],
+    cable: [
+      {code:"CABLE_3C_25", name:"Power Cable 3C 25mm²", mass_kg_per_m:1.2},
+      {code:"CABLE_CAT6", name:"Data Cable Cat6", mass_kg_per_m:0.04},
+    ],
+  };
 
   function defaultApi(){
     return `${location.protocol}//${location.hostname}:8000`;
@@ -166,17 +175,194 @@
       headers["Authorization"] = `Bearer ${token()}`;
     }
     const r = await fetch(apiBase()+path, Object.assign({}, opts, {headers}));
+
+    // If token is invalid/expired, clear it silently
+    if(r.status === 401){
+      localStorage.removeItem(LS_TOKEN);
+      syncAuthPill();
+    }
+
     let body=null;
     try{ body = await r.json(); }catch(e){ body=null; }
     return {r, body};
+  }
+
+  const state = {
+    project: null,
+    tab: "Define Bracket",
+    bracket: {
+      bracket_ref: "BKT-001",
+      span_mm: 1200,
+      tier_count: 1,
+      fire_condition: false,
+      profile_id: "GEN_41x41",
+      rod_id: "GEN_M10",
+      washer_id: "GEN_PENNY_M10",
+      anchor_id: "GEN_STEEL_M10",
+    },
+    library: { profiles:[], rods:[], washers:[], anchors:[] },
+    loads: { "1": [], "2": [], "3": [] }, // each load is object: {id, tier, category, item_code, label, length_m, qty, wet, N, x_mm, width_mm, height_mm, od_mm}
+    lastResult: null,
+    debounceTimer: null,
+    debug: {}
+  };
+
+  function setDebug(obj){
+    state.debug = Object.assign({}, state.debug, obj);
+  }
+
+  function setStatus(text){
+    document.getElementById("statusPill").textContent = text;
   }
 
   function syncAuthPill(){
     document.getElementById("authPill").textContent = isAuthed() ? "Logged in" : "Not logged in";
   }
 
-  function setStatus(text){
-    document.getElementById("statusPill").textContent = text;
+  function optionsFrom(items, valueKey, labelFn, selected){
+    const opts = (items || []).map(it=>{
+      const v = String(it[valueKey] ?? "");
+      const label = labelFn(it);
+      const sel = (v === String(selected)) ? "selected" : "";
+      return `<option value="${escapeHtml(v)}" ${sel}>${escapeHtml(label)}</option>`;
+    }).join("");
+    return `<option value="">Select…</option>` + opts;
+  }
+
+  function mepOptions(category){
+    const arr = MEP_LIBRARY[category] || [];
+    return `<option value="">Select…</option>` + arr.map(it => `<option value="${escapeHtml(it.code)}">${escapeHtml(it.name)}</option>`).join("");
+  }
+
+  function findMep(category, code){
+    return (MEP_LIBRARY[category] || []).find(x => x.code === code) || null;
+  }
+
+  function calcLoadN(category, item, length_m, qty, wet){
+    if(!item) return 0;
+    const L = Math.max(0, Number(length_m || 0));
+    const Q = Math.max(1, Number(qty || 1));
+    let kgpm = Number(item.mass_kg_per_m || 0);
+    if(category === "pipe" && wet){
+      kgpm += Number(item.water_kg_per_m || 0);
+    }
+    const kg = kgpm * L * Q;
+    return kg * G;
+  }
+
+  function buildSnapshot(){
+    // Snapshot used by backend for checks
+    return Object.assign({}, state.bracket, {
+      loads: state.loads
+    });
+  }
+
+  async function saveSnapshot(){
+    if(!state.project?.id) return;
+    const snapshot = buildSnapshot();
+    const {r, body} = await apiFetch(`/projects/${state.project.id}`, {
+      method:"PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ snapshot })
+    });
+    if(!r.ok){
+      setDebug({save_error: body || {status:r.status}});
+    }
+  }
+
+  async function runCheck(){
+    if(!state.project?.id) return;
+    const snapshot = buildSnapshot();
+    const {r, body} = await apiFetch(`/projects/${state.project.id}/check`, {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ snapshot })
+    });
+    if(!r.ok){
+      state.lastResult = {error: body?.detail || "Check failed"};
+      setStatus("Idle");
+      render();
+      return;
+    }
+    state.lastResult = body;
+    setStatus(body.status || "OK");
+    render();
+  }
+
+  function scheduleSaveAndCheck(){
+    if(!state.project?.id) return;
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(async ()=>{
+      setStatus("Saving…");
+      await saveSnapshot();
+      setStatus("Checking…");
+      await runCheck();
+    }, 350);
+  }
+
+  async function loadLibrary(){
+    if(!isAuthed()) return;
+    async function load(kind){
+      const {r, body} = await apiFetch(`/library/${kind}`);
+      if(!r.ok) return [];
+      return body?.items || [];
+    }
+    state.library.profiles = await load("profiles");
+    state.library.rods     = await load("rods");
+    state.library.washers  = await load("washers");
+    state.library.anchors  = await load("anchors");
+  }
+
+  async function refreshProjects(){
+    if(!isAuthed()) return;
+    const {r, body} = await apiFetch("/projects");
+    if(!r.ok) return;
+    const items = body?.items || [];
+    const sel = document.getElementById("projectSelect");
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">Select…</option>`;
+    items.forEach(p=>{
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = `${p.bracket_reference} · ${p.name}`;
+      sel.appendChild(opt);
+    });
+    if(cur) sel.value = cur;
+  }
+
+  async function selectProject(id){
+    if(!id){
+      state.project = null;
+      state.lastResult = null;
+      render();
+      return;
+    }
+    setStatus("Loading…");
+    state.project = {id};
+    const {r, body} = await apiFetch(`/projects/${id}`);
+    if(r.ok && body){
+      // body is snapshot
+      state.bracket = Object.assign({}, state.bracket, body);
+      state.loads = body.loads || state.loads;
+    }
+    setStatus("Idle");
+    render();
+    scheduleSaveAndCheck();
+  }
+
+  async function createProject(){
+    if(!isAuthed()){ alert("Login first"); return; }
+    const name = document.getElementById("projName").value.trim() || "Untitled";
+    const bracket_reference = document.getElementById("projRef").value.trim() || "BKT001";
+    const {r, body} = await apiFetch("/projects", {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name, bracket_reference})
+    });
+    if(!r.ok){ alert(body?.detail || "Failed"); return; }
+    await refreshProjects();
+    document.getElementById("projectSelect").value = body.id;
+    await selectProject(body.id);
   }
 
   async function login(){
@@ -209,166 +395,120 @@
     render();
   }
 
-  async function refreshProjects(){
-    if(!isAuthed()) return;
-    const {r, body} = await apiFetch("/projects");
-    if(!r.ok){
-      alert(body?.detail || "Failed to load projects");
-      return;
-    }
-    const items = Array.isArray(body) ? body : (body?.items || []);
-    const sel = document.getElementById("projectSelect");
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">Select project…</option>';
-    items.forEach(p=>{
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      const ref = p.bracket_reference || p.project_ref || "—";
-      const name = p.name || p.id;
-      opt.textContent = `${ref} · ${name}`;
-      sel.appendChild(opt);
-    });
-    if(cur) sel.value = cur;
-    setDebug({projects: items.length});
+  function tierLoadsArray(tierStr){
+    if(!state.loads[tierStr]) state.loads[tierStr] = [];
+    return state.loads[tierStr];
   }
 
-  async function createProject(){
-    if(!isAuthed()){ alert("Login first"); return; }
-    const name = document.getElementById("projName").value.trim() || "Untitled";
-    const bracket_reference = document.getElementById("projRef").value.trim() || "BKT001";
-    const {r, body} = await apiFetch("/projects", {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({name, bracket_reference})
-    });
-    if(!r.ok){
-      alert(body?.detail || "Failed to create project");
-      return;
-    }
-    await refreshProjects();
-    document.getElementById("projectSelect").value = body.id;
-    await selectProject(body.id);
+  function upsertLoad(load){
+    const t = String(load.tier);
+    const arr = tierLoadsArray(t);
+    const idx = arr.findIndex(x => x.id === load.id);
+    if(idx >= 0) arr[idx] = load;
+    else arr.push(load);
   }
 
-  async function selectProject(id){
-    if(!id){
-      state.project = null;
-      state.lastResult = null;
-      render();
-      return;
-    }
-    state.project = {id};
-    setStatus("Loading…");
-    const {r, body} = await apiFetch(`/projects/${id}`);
-    if(r.ok && body){
-      // Backend returns snapshot JSON; merge into bracket/loads if present
-      // (Snapshot schema can vary; be defensive)
-      state.bracket = Object.assign({}, state.bracket, body);
-      if(body.loads) state.loads = body.loads;
-    }
-    setStatus("Idle");
-    render();
-    scheduleCheck();
-  }
-
-  async function loadLibrary(){
-    if(!isAuthed()) return;
-
-    async function load(kind){
-      const {r, body} = await apiFetch(`/library/${kind}`);
-      if(!r.ok) return [];
-      return body?.items || [];
-    }
-
-    state.library.profiles = await load("profiles");
-    state.library.rods     = await load("rods");
-    state.library.washers  = await load("washers");
-    state.library.anchors  = await load("anchors");
-  }
-
-  function optionsFrom(items, valueKey, labelFn, selected){
-    const opts = (items || []).map(it=>{
-      const v = String(it[valueKey] ?? "");
-      const label = labelFn(it);
-      const sel = (v === String(selected)) ? "selected" : "";
-      return `<option value="${escapeHtml(v)}" ${sel}>${escapeHtml(label)}</option>`;
-    }).join("");
-    return `<option value="">Select…</option>` + opts;
-  }
-
-  function scheduleCheck(){
-    if(!state.project?.id) return;
-    clearTimeout(state.debounceTimer);
-    state.debounceTimer = setTimeout(runCheck, 350);
-  }
-
-  async function runCheck(){
-    if(!state.project?.id) return;
-    setStatus("Checking…");
-
-    // Build a snapshot payload for the backend by updating project snapshot first
-    // Your current backend uses stored snapshot, not request body, so we update it via "create project snapshot" pattern later.
-    // For now we call /check which uses stored snapshot; this UI mainly proves dropdown wiring + future-ready.
-    const {r, body} = await apiFetch(`/projects/${state.project.id}/check`, {method:"POST"});
-    if(!r.ok){
-      setStatus("Idle");
-      state.lastResult = {error: body?.detail || "Check failed"};
-      render();
-      return;
-    }
-    state.lastResult = body;
-    setStatus(body.status || "OK");
-    render();
+  function deleteLoad(tierStr, id){
+    const arr = tierLoadsArray(tierStr);
+    state.loads[tierStr] = arr.filter(x => x.id !== id);
   }
 
   function drawSvg(){
     const span = Number(state.bracket.span_mm || 1200);
-    const tiers = Number(state.bracket.tier_count || 1);
-    const w = 900, h = 280;
-    const pad = 60;
+    const tiers = Math.max(1, Math.min(3, Number(state.bracket.tier_count || 1)));
+    const w = 1100, h = 380;
+    const pad = 70;
     const x1 = pad, x2 = w - pad;
-    const y0 = 70;
-    const tierGap = 55;
+    const y0 = 90;
+    const tierGap = 70;
 
     const tierYs = [];
-    for(let i=0;i<tiers;i++){
-      tierYs.push(y0 + i*tierGap);
+    for(let i=0;i<tiers;i++) tierYs.push(y0 + i*tierGap);
+
+    function xPix(xmm){
+      const frac = span > 0 ? (xmm / span) : 0.5;
+      return x1 + frac*(x2-x1);
     }
 
-    const loads = state.loads;
-    function tierLoad(i){
-      const arr = loads[i] || [];
-      return arr.reduce((a,b)=>a+Number(b||0),0);
+    // Reactions + deflection summary
+    const R = state.lastResult?.reactions_N?.total || null;
+    const d = state.lastResult?.max_deflection_mm?.total ?? null;
+    const dlim = state.lastResult?.deflection_limit_mm ?? null;
+
+    let header = `Span: ${span} mm · Tiers: ${tiers}`;
+    if(R){
+      header += ` · R(L): ${Math.round(R.left)} N  R(R): ${Math.round(R.right)} N`;
+    }
+    if(d != null && dlim != null){
+      header += ` · δmax: ${Number(d).toFixed(2)} mm (limit ${Number(dlim).toFixed(2)} mm)`;
     }
 
-    const lines = tierYs.map((y, idx) => {
-      const t = idx+1;
-      const L = tierLoad(t);
-      return `
-        <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="rgba(255,255,255,.9)" stroke-width="5" />
-        <text x="${x2+10}" y="${y+5}" fill="rgba(255,255,255,.9)" font-size="14">Tier ${t}: ${L} N</text>
-      `;
-    }).join("");
+    // Supports/rods
+    const rods = `
+      <line x1="${x1}" y1="${y0-55}" x2="${x1}" y2="${tierYs[tierYs.length-1]+55}" stroke="rgba(255,255,255,.35)" stroke-width="8"/>
+      <line x1="${x2}" y1="${y0-55}" x2="${x2}" y2="${tierYs[tierYs.length-1]+55}" stroke="rgba(255,255,255,.35)" stroke-width="8"/>
+    `;
+
+    // Beams per tier
+    const beams = tierYs.map((y, idx)=>`
+      <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="rgba(255,255,255,.9)" stroke-width="6"/>
+      <text x="${x2+10}" y="${y+5}" fill="rgba(255,255,255,.9)" font-size="14">Tier ${idx+1}</text>
+    `).join("");
+
+    // Loads
+    let loadMarks = "";
+    for(let t=1;t<=tiers;t++){
+      const arr = tierLoadsArray(String(t));
+      for(const Ld of arr){
+        const xp = xPix(Number(Ld.x_mm||span/2));
+        const yp = tierYs[t-1];
+        loadMarks += `
+          <line x1="${xp}" y1="${yp-38}" x2="${xp}" y2="${yp}" stroke="rgba(255,180,80,.95)" stroke-width="4"/>
+          <polygon points="${xp-8},${yp-38} ${xp+8},${yp-38} ${xp},${yp-22}" fill="rgba(255,180,80,.95)"/>
+          <text x="${xp+10}" y="${yp-20}" fill="rgba(255,220,170,.95)" font-size="12">
+            ${escapeHtml(Ld.label || Ld.item_code || "Load")} · ${Math.round(Number(Ld.N||0))}N
+          </text>
+        `;
+
+        // draw service to scale (simple representation)
+        // pipe: circle; duct/trunking: rect; tray/ladder/basket: line thickness
+        if(Ld.category === "pipe" && Ld.od_mm){
+          const r = Math.max(4, Math.min(18, Number(Ld.od_mm)/6));
+          loadMarks += `<circle cx="${xp}" cy="${yp+22}" r="${r}" fill="none" stroke="rgba(180,220,255,.8)" stroke-width="3"/>`;
+        } else if((Ld.category === "duct" || Ld.category === "trunking") && (Ld.width_mm || Ld.height_mm)){
+          const rw = Math.max(20, Math.min(160, Number(Ld.width_mm)/4));
+          const rh = Math.max(12, Math.min(80, Number(Ld.height_mm)/4));
+          loadMarks += `<rect x="${xp-rw/2}" y="${yp+10}" width="${rw}" height="${rh}" fill="none" stroke="rgba(180,220,255,.8)" stroke-width="3" rx="6"/>`;
+        } else if(Ld.category === "tray" || Ld.category === "ladder" || Ld.category === "basket"){
+          const lw = Math.max(30, Math.min(200, Number(Ld.width_mm||200)/3));
+          loadMarks += `<line x1="${xp-lw/2}" y1="${yp+24}" x2="${xp+lw/2}" y2="${yp+24}" stroke="rgba(180,220,255,.8)" stroke-width="8" />`;
+        }
+      }
+    }
+
+    // Status badge
+    const status = state.lastResult?.status || "—";
+    const gov = state.lastResult?.governing_check || "—";
 
     return `
       <svg viewBox="0 0 ${w} ${h}">
-        <text x="${pad}" y="28" fill="rgba(255,255,255,.9)" font-size="16" font-weight="700">
-          Span: ${span} mm · Tiers: ${tiers}
+        <text x="${pad}" y="34" fill="rgba(255,255,255,.95)" font-size="16" font-weight="800">${escapeHtml(header)}</text>
+
+        <text x="${pad}" y="58" fill="rgba(255,255,255,.8)" font-size="13">
+          Status: ${escapeHtml(status)} · Governing: ${escapeHtml(gov)}
         </text>
-        <line x1="${x1}" y1="${y0-40}" x2="${x1}" y2="${tierYs[tierYs.length-1]+40}" stroke="rgba(255,255,255,.4)" stroke-width="6"/>
-        <line x1="${x2}" y1="${y0-40}" x2="${x2}" y2="${tierYs[tierYs.length-1]+40}" stroke="rgba(255,255,255,.4)" stroke-width="6"/>
-        ${lines}
+
+        ${rods}
+        ${beams}
+        ${loadMarks}
       </svg>
     `;
   }
 
   function render(){
     document.getElementById("pageTitle").textContent = state.tab;
-    if(state.project?.id){
-      document.getElementById("projectMeta").textContent = `Project: ${state.project.id}`;
-    } else {
-      document.getElementById("projectMeta").textContent = `No project selected`;
-    }
+    document.getElementById("projectMeta").textContent =
+      state.project?.id ? `Project: ${state.project.id}` : "No project selected";
 
     document.querySelectorAll(".tab").forEach(el=>{
       el.classList.toggle("active", el.dataset.tab === state.tab);
@@ -379,86 +519,66 @@
     if(state.tab === "Define Bracket"){
       c.innerHTML = `
         <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Define Bracket</div>
+          <div style="font-weight:950;margin-bottom:10px">Define Bracket</div>
 
-          <div class="row">
-            <div style="flex:1">
+          <div class="grid3">
+            <div>
               <label>Bracket Ref</label>
-              <input id="bracket_ref" value="${escapeHtml(state.bracket.bracket_ref)}" />
+              <input id="bracket_ref" value="${escapeHtml(state.bracket.bracket_ref)}"/>
             </div>
-            <div style="flex:1">
+            <div>
               <label>Span (mm)</label>
-              <input id="span_mm" type="number" value="${escapeHtml(state.bracket.span_mm)}" />
+              <input id="span_mm" type="number" value="${escapeHtml(state.bracket.span_mm)}"/>
             </div>
-          </div>
-
-          <div class="row">
-            <div style="flex:1">
+            <div>
               <label>Tier Count</label>
               <select id="tier_count">
-                <option value="1" ${state.bracket.tier_count==1?"selected":""}>1</option>
-                <option value="2" ${state.bracket.tier_count==2?"selected":""}>2</option>
-                <option value="3" ${state.bracket.tier_count==3?"selected":""}>3</option>
-              </select>
-            </div>
-            <div style="flex:1">
-              <label>Fire Condition</label>
-              <select id="fire_condition">
-                <option value="false" ${!state.bracket.fire_condition?"selected":""}>No</option>
-                <option value="true" ${state.bracket.fire_condition?"selected":""}>Yes</option>
+                <option value="1" ${Number(state.bracket.tier_count)==1?"selected":""}>1</option>
+                <option value="2" ${Number(state.bracket.tier_count)==2?"selected":""}>2</option>
+                <option value="3" ${Number(state.bracket.tier_count)==3?"selected":""}>3</option>
               </select>
             </div>
           </div>
 
-          <label>Profile</label>
-          <select id="profile_id">
-            ${optionsFrom(
-              state.library.profiles,
-              "profile_id",
-              p => `${p.profile_id} · ${p.profile_name} (${p.width_mm}x${p.height_mm}x${p.thickness_mm})`,
-              state.bracket.profile_id
-            )}
-          </select>
+          <div class="grid2">
+            <div>
+              <label>Profile</label>
+              <select id="profile_id">
+                ${optionsFrom(state.library.profiles,"profile_id",p=>`${p.profile_id} · ${p.profile_name} (${p.width_mm}x${p.height_mm}x${p.thickness_mm})`,state.bracket.profile_id)}
+              </select>
+            </div>
+            <div>
+              <label>Rod</label>
+              <select id="rod_id">
+                ${optionsFrom(state.library.rods,"rod_id",r=>`${r.rod_id} · ${r.rod_name || r.thread || "Rod"}`,state.bracket.rod_id)}
+              </select>
+            </div>
+          </div>
 
-          <label>Rod</label>
-          <select id="rod_id">
-            ${optionsFrom(
-              state.library.rods,
-              "rod_id",
-              r => `${r.rod_id} · ${r.rod_name || r.thread || "Rod"}`,
-              state.bracket.rod_id
-            )}
-          </select>
+          <div class="grid2">
+            <div>
+              <label>Washer</label>
+              <select id="washer_id">
+                ${optionsFrom(state.library.washers,"washer_id",w=>`${w.washer_id} · ${w.washer_name} (x${w.bearing_area_multiplier||1})`,state.bracket.washer_id)}
+              </select>
+            </div>
+            <div>
+              <label>Anchor</label>
+              <select id="anchor_id">
+                ${optionsFrom(state.library.anchors,"anchor_id",a=>`${a.anchor_id} · ${a.anchor_name || a.base_material || "Anchor"}`,state.bracket.anchor_id)}
+              </select>
+            </div>
+          </div>
 
-          <label>Washer</label>
-          <select id="washer_id">
-            ${optionsFrom(
-              state.library.washers,
-              "washer_id",
-              w => `${w.washer_id} · ${w.washer_name} (x${w.bearing_area_multiplier || 1})`,
-              state.bracket.washer_id
-            )}
-          </select>
-
-          <label>Anchor</label>
-          <select id="anchor_id">
-            ${optionsFrom(
-              state.library.anchors,
-              "anchor_id",
-              a => `${a.anchor_id} · ${a.anchor_name || a.base_material || "Anchor"}`,
-              state.bracket.anchor_id
-            )}
-          </select>
-
-          <div class="row" style="margin-top:12px">
-            <button class="btn" id="toLoadsBtn" style="background:#415a8b">Next: Add Loads</button>
+          <div class="row" style="margin-top:10px">
+            <button class="btn secondary" id="gotoLoads">Next: Add Loads</button>
           </div>
         </div>
 
         <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Preview</div>
+          <div style="font-weight:950;margin-bottom:10px">Live Preview</div>
           ${drawSvg()}
-          <div class="muted" style="margin-top:8px">Live drawing updates as you change tier count/span.</div>
+          <div class="muted" style="margin-top:8px">Load positions, reactions, and deflection update as you edit.</div>
         </div>
       `;
 
@@ -467,51 +587,94 @@
     }
 
     if(state.tab === "Add Loads"){
-      const tiers = Number(state.bracket.tier_count || 1);
-      let html = `
-        <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Add Loads (N)</div>
-          <div class="muted">Enter one or more loads per tier (N). This is placeholder until duct/pipe weights are integrated.</div>
-      `;
+      const span = Number(state.bracket.span_mm || 1200);
+      const tiers = Math.max(1, Math.min(3, Number(state.bracket.tier_count || 1)));
 
-      for(let t=1;t<=tiers;t++){
-        const arr = state.loads[t] || [];
-        html += `
-          <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">
-            <div style="font-weight:800">Tier ${t}</div>
-            <div class="row" style="margin-top:8px;align-items:flex-end">
-              <div style="flex:1">
-                <label>Loads (comma separated)</label>
-                <input id="tier_${t}" value="${escapeHtml(arr.join(","))}" />
-              </div>
+      c.innerHTML = `
+        <div class="card">
+          <div style="font-weight:950;margin-bottom:10px">Add Loads (MEP items)</div>
+          <div class="muted">Pick an item, length/qty, choose tier + position. The tool calculates N automatically.</div>
+
+          <div class="grid3">
+            <div>
+              <label>Tier</label>
+              <select id="new_tier">
+                ${[1,2,3].map(t=>`<option value="${t}" ${t==1?"selected":""} ${t>tiers?"disabled":""}>Tier ${t}</option>`).join("")}
+              </select>
+            </div>
+            <div>
+              <label>Category</label>
+              <select id="new_cat">
+                <option value="pipe">Pipework</option>
+                <option value="duct">Ductwork</option>
+                <option value="tray">Cable Tray</option>
+                <option value="ladder">Cable Ladder</option>
+                <option value="basket">Basket</option>
+                <option value="trunking">Trunking</option>
+                <option value="cable">Cables</option>
+              </select>
+            </div>
+            <div>
+              <label>Item</label>
+              <select id="new_item"></select>
             </div>
           </div>
-        `;
-      }
 
-      html += `
-          <div class="row" style="margin-top:12px">
-            <button class="btn" id="runCheckBtn">Run Check</button>
+          <div class="grid3">
+            <div>
+              <label>Length (m)</label>
+              <input id="new_len" type="number" step="0.1" value="1.2"/>
+            </div>
+            <div>
+              <label>Qty</label>
+              <input id="new_qty" type="number" step="1" value="1"/>
+            </div>
+            <div>
+              <label>Wet (pipes only)</label>
+              <select id="new_wet">
+                <option value="false" selected>Dry</option>
+                <option value="true">Wet</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label>Position along span (mm)</label>
+            <input id="new_pos" type="range" min="0" max="${span}" value="${Math.round(span/2)}"/>
+            <div class="muted">Span: ${span} mm</div>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <div class="pill" id="new_N_pill">Load: —</div>
+            <button class="btn good" id="addLoadBtn">Add Load</button>
           </div>
         </div>
 
         <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Preview</div>
+          <div style="font-weight:950;margin-bottom:10px">Loads Table</div>
+          ${renderLoadsTable()}
+        </div>
+
+        <div class="card">
+          <div style="font-weight:950;margin-bottom:10px">Live Preview</div>
           ${drawSvg()}
         </div>
       `;
 
-      c.innerHTML = html;
-      wireLoads();
+      wireAddLoads();
       return;
     }
 
     if(state.tab === "Output"){
+      const res = state.lastResult || {info:"Run checks by editing bracket/loads with a project selected."};
       c.innerHTML = `
         <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Result</div>
-          <pre>${escapeHtml(JSON.stringify(state.lastResult || {info:"Run a check to see results"}, null, 2))}</pre>
-          <div class="muted">PDF output wiring comes next (after check engine is non-placeholder).</div>
+          <div style="font-weight:950;margin-bottom:10px">Check Result</div>
+          <div class="row" style="margin-bottom:10px">
+            <span class="tag">Status: ${escapeHtml(res.status || "—")}</span>
+            <span class="tag">Governing: ${escapeHtml(res.governing_check || "—")}</span>
+          </div>
+          <pre>${escapeHtml(JSON.stringify(res, null, 2))}</pre>
         </div>
       `;
       return;
@@ -520,7 +683,7 @@
     if(state.tab === "Debug"){
       c.innerHTML = `
         <div class="card">
-          <div style="font-weight:900;margin-bottom:10px">Debug</div>
+          <div style="font-weight:950;margin-bottom:10px">Debug</div>
           <div class="muted">API Base: ${escapeHtml(apiBase())}</div>
           <div class="muted">Authed: ${isAuthed() ? "yes" : "no"}</div>
           <pre>${escapeHtml(JSON.stringify(state.debug, null, 2))}</pre>
@@ -530,20 +693,68 @@
     }
   }
 
+  function renderLoadsTable(){
+    const tiers = Math.max(1, Math.min(3, Number(state.bracket.tier_count || 1)));
+    let rows = "";
+    for(let t=1;t<=tiers;t++){
+      const arr = tierLoadsArray(String(t));
+      for(const Ld of arr){
+        rows += `
+          <tr>
+            <td>${t}</td>
+            <td>${escapeHtml(Ld.category)}</td>
+            <td>${escapeHtml(Ld.label || Ld.item_code)}</td>
+            <td>${Number(Ld.length_m||0).toFixed(2)}</td>
+            <td>${Number(Ld.qty||1)}</td>
+            <td>${Math.round(Number(Ld.N||0))}</td>
+            <td>
+              <input data-role="pos" data-tier="${t}" data-id="${escapeHtml(Ld.id)}"
+                type="range" min="0" max="${Number(state.bracket.span_mm||1200)}" value="${Math.round(Number(Ld.x_mm||0))}"/>
+              <div class="muted">${Math.round(Number(Ld.x_mm||0))} mm</div>
+            </td>
+            <td><button class="btn bad" data-role="del" data-tier="${t}" data-id="${escapeHtml(Ld.id)}">Delete</button></td>
+          </tr>
+        `;
+      }
+    }
+
+    if(!rows){
+      return `<div class="muted">No loads yet. Add items above.</div>`;
+    }
+
+    return `
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Tier</th><th>Type</th><th>Item</th><th>Len (m)</th><th>Qty</th><th>N</th><th>Position</th><th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
   function wireDefine(){
-    const el = (id) => document.getElementById(id);
+    const el = id => document.getElementById(id);
 
-    el("toLoadsBtn").onclick = ()=>{ state.tab="Add Loads"; render(); };
+    el("gotoLoads").onclick = ()=>{ state.tab="Add Loads"; render(); };
 
-    const bind = (id, fn) => {
-      el(id).addEventListener("input", ()=>{ fn(el(id).value); render(); scheduleCheck(); });
-      el(id).addEventListener("change", ()=>{ fn(el(id).value); render(); scheduleCheck(); });
-    };
+    function bind(id, fn){
+      el(id).addEventListener("input", ()=>{
+        fn(el(id).value);
+        render();
+        scheduleSaveAndCheck();
+      });
+      el(id).addEventListener("change", ()=>{
+        fn(el(id).value);
+        render();
+        scheduleSaveAndCheck();
+      });
+    }
 
     bind("bracket_ref", v => state.bracket.bracket_ref = v);
     bind("span_mm", v => state.bracket.span_mm = Number(v||0));
     bind("tier_count", v => state.bracket.tier_count = Number(v||1));
-    bind("fire_condition", v => state.bracket.fire_condition = (String(v) === "true"));
 
     bind("profile_id", v => state.bracket.profile_id = String(v||""));
     bind("rod_id", v => state.bracket.rod_id = String(v||""));
@@ -551,21 +762,104 @@
     bind("anchor_id", v => state.bracket.anchor_id = String(v||""));
   }
 
-  function wireLoads(){
-    const tiers = Number(state.bracket.tier_count || 1);
-    for(let t=1;t<=tiers;t++){
-      const inp = document.getElementById(`tier_${t}`);
-      inp.addEventListener("input", ()=>{
-        const parts = inp.value.split(",").map(s=>s.trim()).filter(Boolean).map(x=>Number(x));
-        state.loads[t] = parts.filter(n=>Number.isFinite(n));
-        render();
-        scheduleCheck();
-      });
+  function wireAddLoads(){
+    const span = Number(state.bracket.span_mm || 1200);
+
+    const tierEl = document.getElementById("new_tier");
+    const catEl = document.getElementById("new_cat");
+    const itemEl = document.getElementById("new_item");
+    const lenEl = document.getElementById("new_len");
+    const qtyEl = document.getElementById("new_qty");
+    const wetEl = document.getElementById("new_wet");
+    const posEl = document.getElementById("new_pos");
+    const pill = document.getElementById("new_N_pill");
+
+    function refreshItems(){
+      itemEl.innerHTML = mepOptions(catEl.value);
+      updatePill();
     }
-    document.getElementById("runCheckBtn").onclick = ()=>runCheck();
+
+    function updatePill(){
+      const cat = catEl.value;
+      const code = itemEl.value;
+      const item = findMep(cat, code);
+      const wet = (wetEl.value === "true");
+      const N = calcLoadN(cat, item, lenEl.value, qtyEl.value, wet);
+      pill.textContent = `Load: ${Math.round(N)} N`;
+    }
+
+    catEl.onchange = refreshItems;
+    itemEl.onchange = updatePill;
+    lenEl.oninput = updatePill;
+    qtyEl.oninput = updatePill;
+    wetEl.onchange = updatePill;
+
+    posEl.oninput = ()=>{};
+    posEl.max = String(span);
+
+    refreshItems();
+
+    document.getElementById("addLoadBtn").onclick = ()=>{
+      const tier = Number(tierEl.value || 1);
+      const cat = catEl.value;
+      const code = itemEl.value;
+      const item = findMep(cat, code);
+      if(!item){ alert("Select an item"); return; }
+
+      const wet = (wetEl.value === "true");
+      const length_m = Number(lenEl.value || 0);
+      const qty = Number(qtyEl.value || 1);
+      const x_mm = Number(posEl.value || Math.round(span/2));
+      const N = calcLoadN(cat, item, length_m, qty, wet);
+
+      const load = {
+        id: uid(),
+        tier,
+        category: cat,
+        item_code: code,
+        label: item.name,
+        length_m,
+        qty,
+        wet,
+        x_mm,
+        N,
+        width_mm: item.w_mm || item.width_mm || null,
+        height_mm: item.h_mm || item.height_mm || null,
+        od_mm: item.od_mm || null
+      };
+
+      upsertLoad(load);
+      render();
+      scheduleSaveAndCheck();
+    };
+
+    // Wire delete + position sliders in table
+    document.querySelectorAll('[data-role="del"]').forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const tier = String(btn.getAttribute("data-tier"));
+        const id = btn.getAttribute("data-id");
+        deleteLoad(tier, id);
+        render();
+        scheduleSaveAndCheck();
+      });
+    });
+
+    document.querySelectorAll('input[data-role="pos"]').forEach(sl=>{
+      sl.addEventListener("input", ()=>{
+        const tier = String(sl.getAttribute("data-tier"));
+        const id = sl.getAttribute("data-id");
+        const arr = tierLoadsArray(tier);
+        const idx = arr.findIndex(x=>x.id===id);
+        if(idx>=0){
+          arr[idx].x_mm = Number(sl.value || 0);
+          render();
+          scheduleSaveAndCheck();
+        }
+      });
+    });
   }
 
-  // ---- Side UI wiring ----
+  // --- Side wiring ---
   document.getElementById("apiBase").value = apiBase();
   document.getElementById("saveApiBtn").onclick = ()=>{
     const v = document.getElementById("apiBase").value.trim() || defaultApi();
@@ -578,7 +872,7 @@
   document.getElementById("refreshProjectsBtn").onclick = refreshProjects;
   document.getElementById("createProjectBtn").onclick = createProject;
 
-  document.getElementById("projectSelect").addEventListener("change", (e)=>{
+  document.getElementById("projectSelect").addEventListener("change", e=>{
     selectProject(e.target.value);
   });
 
@@ -589,9 +883,8 @@
     });
   });
 
-  // ---- init ----
+  // init
   syncAuthPill();
-  // auto-load if already authed
   (async ()=>{
     if(isAuthed()){
       await refreshProjects();
@@ -599,7 +892,6 @@
     }
     render();
   })();
-
 </script>
 </body>
 </html>
