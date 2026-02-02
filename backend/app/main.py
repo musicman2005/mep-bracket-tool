@@ -13,6 +13,7 @@ from .auth import hash_password, verify_password, create_access_token, get_curre
 from .calc_engine import run_checks, parse_rod_size
 from .pdf_report import build_pdf
 from .importers.csv_import import import_profiles, import_rods, import_washers, import_anchors
+from sqlalchemy import text
 
 TOOL_VERSION = "0.1.0"
 PDF_OUTPUT_DIR = os.getenv("PDF_OUTPUT_DIR", "/data/pdfs")
@@ -71,7 +72,46 @@ def import_library(kind: str, file: UploadFile = File(...), db: Session = Depend
     if kind == "anchors":
         return import_anchors(db, data)
     raise HTTPException(status_code=404, detail="Unknown kind")
+LIB_TABLES = {
+    "profiles": "lib_profiles",
+    "rods": "lib_rods",
+    "washers": "lib_washers",
+    "anchors": "lib_anchors",
+}
 
+@app.get("/library/{kind}")
+def list_library(
+    kind: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    table = LIB_TABLES.get(kind)
+    if not table:
+        raise HTTPException(status_code=400, detail=f"Unknown library kind: {kind}")
+
+    rows = db.execute(text(f"SELECT * FROM {table} ORDER BY id")).mappings().all()
+    return {"items": [dict(r) for r in rows]}
+
+@app.get("/library/{kind}/{item_id}")
+def get_library_item(
+    kind: str,
+    item_id: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
+    table = LIB_TABLES.get(kind)
+    if not table:
+        raise HTTPException(status_code=400, detail=f"Unknown library kind: {kind}")
+
+    row = db.execute(
+        text(f"SELECT * FROM {table} WHERE id = :id LIMIT 1"),
+        {"id": item_id},
+    ).mappings().first()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    return dict(row)
 # ---- Projects ----
 def _get_project(db: Session, project_id: str, user_id: int) -> models.Project:
     p = db.query(models.Project).filter(models.Project.id == project_id, models.Project.owner_user_id == user_id).first()
